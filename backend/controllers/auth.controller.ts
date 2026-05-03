@@ -5,7 +5,7 @@ import  jwt from "jsonwebtoken";
 
 const SALT_ROUND = 5;
 
-const JWT_SECRET = "dcvbnjkiuytfcvbnmkoiuyhnmloiuyhnamkidwjmckpwokjmloijhnmloiuytrfbnko";
+const JWT_SECRET = process.env.JWT_SECRET as string;
 export const loginUser = async (req: Request, res: Response) => {
     const { username , password} = req.body;
 
