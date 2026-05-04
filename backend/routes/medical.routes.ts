@@ -1,9 +1,13 @@
 import express from "express";
+import { addRecords, getPatientRecord, getOneRecord, updateOneRecord, deleteOneRecord } from "../controllers/medical.controller.ts";
+import UserAuthMiddleware from "../middlewares/auth.middleware.ts";
 
 const router = express.Router();
 
-router.post("/records",addRecords);
-router.get("/records/patient/:id",getPatientRecord);
-router.get("/records/:id",getOneRecord);
-router.put("/records/:id",updateOneRecord);
-router.delete("/records/:id",deleteOneRecord);4
+router.post("/records", UserAuthMiddleware, addRecords);
+router.get("/records/patient/:id", UserAuthMiddleware, getPatientRecord);
+router.get("/records/:id", UserAuthMiddleware, getOneRecord);
+router.put("/records/:id", UserAuthMiddleware, updateOneRecord);
+router.delete("/records/:id", UserAuthMiddleware, deleteOneRecord);
+
+export default router;
