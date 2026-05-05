@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { getAppoointments, getOneAppointmentsData, insertAppointment, updateAppointmentStatus } from "../models/appointments.model.ts";
+import { getAppoointments, getDoctorScheduleData, getOneAppointmentsData, getPatientScheduleData, insertAppointment, updateAppointmentStatus } from "../models/appointments.model.ts";
 
 export const addAppointment = async (req: Request, res: Response) => {
-    const { patient_id, doctor_id, appointment_datetime, reason, status, created_at, updated_at } = req.body;
+    const { patient_id, doctor_id, appointment_datetime, reason, status} = req.body;
     try {
         const appointment = await insertAppointment({ patient_id, doctor_id, appointment_datetime, status, reason });
         res.status(200).json({
@@ -60,9 +60,10 @@ export const updateStatus = async (req: Request, res: Response) => {
 };
 
 export const getDoctorSchedule = async (req: Request, res: Response) => {
+    const doctor_id = req.params.id;
     try {
-        // Implementation here
-        res.status(200).json({ schedule: [] });
+        const result = await getDoctorScheduleData(doctor_id);
+        res.status(200).json({ schedule: result });
     } catch (err) {
         res.status(500).json({
             "message": "Error fetching doctor schedule",
@@ -72,9 +73,10 @@ export const getDoctorSchedule = async (req: Request, res: Response) => {
 };
 
 export const getPatientSchedule = async (req: Request, res: Response) => {
+    const patient_id = req.params.id;
     try {
-        // Implementation here
-        res.status(200).json({ schedule: [] });
+        const result = await getPatientScheduleData(patient_id);
+        res.status(200).json({ schedule: result });
     } catch (err) {
         res.status(500).json({
             "message": "Error fetching patient schedule",
