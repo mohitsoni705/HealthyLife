@@ -25,9 +25,9 @@ export const getPatientRecord = async (req: Request, res: Response) => {
 export const getOneRecord = async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
-        const result = await getOneMedicalRecord(id);
+        // const result = await getOneMedicalRecord(id);
         // Implementation here
-        res.status(200).json({ record: result });
+        // res.status(200).json({ record: result });
     } catch (err) {
         res.status(500).json({ message: "Error fetching record", error: err });
     }
