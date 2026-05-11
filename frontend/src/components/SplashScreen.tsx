@@ -20,7 +20,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-400 via-blue-500 to-lightblue-200 overflow-hidden duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-blue-400 overflow-hidden duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
 
       {/* Floating medical icons */}
       <div className="absolute inset-0">

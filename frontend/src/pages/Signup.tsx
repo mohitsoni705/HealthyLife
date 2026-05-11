@@ -1,66 +1,84 @@
-import React, { useState } from 'react';
-import { User, Mail, Lock } from 'lucide-react';
-import Button from '../components/Button';
-import Roleselector from './Roleselector';
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { BACKEND_URL } from '../config';
+import { LeftChevron, Logo } from '../Icon/Icon';
+import SignUpForm from '../components/SignUpForm';
 
 const Signup: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'doctor' | 'admin' | 'reception' | null>(null);
+  const nameRef = useRef<any>(null);
+  const passwordRef = useRef<any>(null);
+  const emailRef = useRef<any>(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!role) {
-      alert('Please select a role');
+  const role = localStorage.getItem('selectedRole') || 'doctor';
+
+  async function signup() {
+    const username = nameRef.current?.value;
+    const password = passwordRef.current?.value;
+    const email = emailRef.current?.value;
+
+    if (!username || !password || !email) {
+      setError("Please fill all fields");
       return;
     }
-    // Handle sign up logic here
-    console.log('Sign up:', { name, email, password, role });
-  };
+
+    try {
+      setError("");
+      setLoading(true);
+      await axios.post(`${BACKEND_URL}/auth`, {
+        username,
+        password,
+        email,
+        role
+      })
+      setLoading(false);
+      alert("Account created successfully!");
+      navigate("/signin")
+    } catch (err: any) {
+      setLoading(false);
+      if (err.response && err.response.status === 401) {
+        setError("User already exists");
+      } else {
+        setError("Server error. Please try again later.");
+      }
+    }
+  }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center mb-6">Sign Up</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center border rounded px-3 py-2">
-          <User size={20} className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="flex-1 outline-none"
-            required
-          />
+    <div className='flex flex-col md:flex-row min-h-screen w-full'>
+      {/* LEFT SIDE */}
+      <div className='hidden md:flex flex-col gap-3 items-center justify-center w-1/2 bg-blue-200/50'>
+        <div className='text-3xl text-blue-900'>
+          <Logo />
         </div>
-        <div className="flex items-center border rounded px-3 py-2">
-          <Mail size={20} className="text-gray-400 mr-2" />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 outline-none"
-            required
-          />
+        <div className='text-4xl text-blue-950 font-bold'>
+          Healthcare
         </div>
-        <div className="flex items-center border rounded px-3 py-2">
-          <Lock size={20} className="text-gray-400 mr-2" />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="flex-1 outline-none"
-            required
-          />
+        <div className='text-blue-950 text-xl font-semibold'>
+          Medical App
         </div>
-        <Roleselector onSelectRole={setRole} />
-        <Button type="submit" className="w-full mt-4">
-          Sign Up
-        </Button>
-      </form>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className='w-full md:w-1/2 flex flex-col gap-8 items-center justify-center px-6 py-4'>
+        <div className='relative md:w-1/2 w-full flex flex-row items-center justify-center '>
+          <div className='absolute left-0 cursor-pointer '>
+            <span onClick={() => navigate(-1)}>
+              <LeftChevron />
+            </span>
+          </div>
+          <div className='text-center text-2xl font-bold text-gray-800'>
+            Sign Up
+          </div>
+        </div>
+
+        <div className='w-full max-w-md'>
+          <SignUpForm nameRef={nameRef} passwordRef={passwordRef} emailRef={emailRef} signup={signup} loading={loading} error={error} />
+        </div>
+      </div>
     </div>
   );
 };

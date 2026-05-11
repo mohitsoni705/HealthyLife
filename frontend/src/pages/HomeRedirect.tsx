@@ -1,11 +1,23 @@
 import { Navigate } from "react-router-dom"
+
 const HomeRedirect = () => {
     const token = localStorage.getItem("token");
-    if(!token){
-        return <Navigate to="/signup"/>
-    }else{
-        return <Navigate to="/dashboard"/>
+    const onboarded = localStorage.getItem("onboarded");
+
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return <Navigate to={`/dashboard-${payload.role}`} />
+        } catch {
+            localStorage.removeItem("token");
+        }
     }
+
+    if (!onboarded) {
+        return <Navigate to="/onboarding" />
+    }
+
+    return <Navigate to="/select-role" />
 }
 
 export default HomeRedirect

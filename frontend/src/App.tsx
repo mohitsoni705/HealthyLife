@@ -9,6 +9,8 @@ import DashboardDoctor from "./pages/DashboardDoctor"
 import DashboardReception from "./pages/DashboardReception"
 import HomeRedirect from "./pages/HomeRedirect"
 import SplashScreen from "./components/SplashScreen"
+import Onboarding from "./pages/Onboarding"
+import Roleselector from "./pages/Roleselector"
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -23,6 +25,8 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomeRedirect/>}/>
+          <Route path="/onboarding" element={<Onboarding/>}/>
+          <Route path="/select-role" element={<Roleselector/>}/>
           <Route path="/signin" element={<Signin/>} />
           <Route path="/signup" element={<Signup/>} />
           <Route path="/" element={<AppLayout/>}>

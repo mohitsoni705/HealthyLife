@@ -1,31 +1,46 @@
-import React from 'react';
-import { Stethoscope, Shield, User } from 'lucide-react';
-import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom'
+import { Stethoscope, Shield, ClipboardList } from 'lucide-react'
+import { Logo } from '../Icon/Icon'
 
-interface RoleselectorProps {
-  onSelectRole: (role: 'doctor' | 'admin' | 'reception') => void;
-}
+const roles = [
+  { key: 'doctor', label: 'Doctor', desc: 'Manage patients & records', icon: Stethoscope },
+  { key: 'admin', label: 'Admin', desc: 'Full system control', icon: Shield },
+  { key: 'reception', label: 'Reception', desc: 'Appointments & billing', icon: ClipboardList },
+] as const
 
-const Roleselector: React.FC<RoleselectorProps> = ({ onSelectRole }) => {
+const Roleselector = () => {
+  const navigate = useNavigate()
+
+  const selectRole = (role: string) => {
+    localStorage.setItem('selectedRole', role)
+    navigate('/signup')
+  }
+
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <h2 className="text-xl font-semibold">Select Your Role</h2>
-      <div className="flex space-x-4">
-        <Button onClick={() => onSelectRole('doctor')} variant="outline" className="flex items-center space-x-2">
-          <Stethoscope size={20} />
-          <span>Doctor</span>
-        </Button>
-        <Button onClick={() => onSelectRole('admin')} variant="outline" className="flex items-center space-x-2">
-          <Shield size={20} />
-          <span>Admin</span>
-        </Button>
-        <Button onClick={() => onSelectRole('reception')} variant="outline" className="flex items-center space-x-2">
-          <User size={20} />
-          <span>Reception</span>
-        </Button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-white px-6">
+      <div className="mb-6">
+        <Logo />
+      </div>
+      <h1 className="text-2xl font-bold text-gray-800 mb-2">Who are you?</h1>
+      <p className="text-gray-500 mb-10">Select your role to continue</p>
+
+      <div className="flex flex-col sm:flex-row gap-5 w-full max-w-2xl">
+        {roles.map(({ key, label, desc, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => selectRole(key)}
+            className="flex-1 flex flex-col items-center gap-3 p-8 rounded-2xl border-2 border-blue-100 bg-white hover:border-[#407CE2] hover:shadow-lg transition-all duration-200 cursor-pointer group"
+          >
+            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-[#407CE2] transition-colors">
+              <Icon size={28} className="text-[#407CE2] group-hover:text-white transition-colors" />
+            </div>
+            <span className="text-lg font-semibold text-gray-800">{label}</span>
+            <span className="text-sm text-gray-400">{desc}</span>
+          </button>
+        ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Roleselector;
+export default Roleselector
