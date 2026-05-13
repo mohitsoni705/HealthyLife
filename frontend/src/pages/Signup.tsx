@@ -5,7 +5,7 @@ import { BACKEND_URL } from '../config';
 import { LeftChevron, Logo } from '../Icon/Icon';
 import SignUpForm from '../components/SignUpForm';
 
-const Signup: React.FC = () => {
+const Signup = () => {
   const nameRef = useRef<any>(null);
   const passwordRef = useRef<any>(null);
   const emailRef = useRef<any>(null);
@@ -28,7 +28,7 @@ const Signup: React.FC = () => {
     try {
       setError("");
       setLoading(true);
-      await axios.post(`${BACKEND_URL}/auth`, {
+      await axios.post(`http://localhost:8000/api/v1/auth/signup`, {
         username,
         password,
         email,

@@ -1,3 +1,4 @@
+
 import express from "express";
 import { addAppointment, getAllAppointment, getDoctorSchedule, getOneAppointment, getPatientSchedule, updateStatus } from "../controllers/appointment.controller.ts";
 import UserAuthMiddleware from "../middlewares/auth.middleware.ts";

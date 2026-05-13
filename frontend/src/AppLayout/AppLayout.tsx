@@ -1,16 +1,10 @@
 import { Outlet } from 'react-router'
-import Sidebar from './Sidebar'
 
 const AppLayout = () => {
   return (
-      <div className='flex flex-row'>
-        <div>
-        <Sidebar/>
-        <div>
+      <div>
             <Outlet/>
         </div>
-        </div>
-      </div>
   )
 }
 

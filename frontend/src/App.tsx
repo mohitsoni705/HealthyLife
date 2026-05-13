@@ -11,6 +11,7 @@ import HomeRedirect from "./pages/HomeRedirect"
 import SplashScreen from "./components/SplashScreen"
 import Onboarding from "./pages/Onboarding"
 import Roleselector from "./pages/Roleselector"
+import Patients from "./pages/Patients"
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -30,7 +31,8 @@ const App = () => {
           <Route path="/signin" element={<Signin/>} />
           <Route path="/signup" element={<Signup/>} />
           <Route path="/" element={<AppLayout/>}>
-          <Route path="dashboard-admin" element={<ProtectedRoute><DashboardAdmin/></ProtectedRoute>}/>
+          <Route path="/dashboard-admin" element={<ProtectedRoute><DashboardAdmin/></ProtectedRoute>}/>
+          <Route path="/patients" element={<Patients/>}/>
           <Route path="dashboard-doctor" element={<ProtectedRoute><DashboardDoctor/></ProtectedRoute>}/>
           <Route path="dashboard-reception" element={<ProtectedRoute><DashboardReception/></ProtectedRoute>}/>
           </Route>

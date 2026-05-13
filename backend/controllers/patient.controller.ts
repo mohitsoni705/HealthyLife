@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addPatient, getAllPatient, getOnePatient as getOnePatientModel, deletePatient as deletePatientModel, updatePatient as updatePatientModel } from "../models/patient.model.ts";
+import { addPatient, getAllPatient, getOnePatientModel , deletePatient as deletePatientModel, updatePatient as updatePatientModel } from "../models/patient.model.ts";
 
 export const addPatients = async (req: Request, res: Response) => {
     try {
@@ -31,7 +31,8 @@ export const getPatient = async (req: Request, res: Response) => {
 export const getOnePatient = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id as string);
-        const patient = await getOnePatientModel(id);
+        const idNumber = id as number;
+        const patient = await getOnePatientModel(idNumber);
         res.status(200).json({ patient });
     } catch (err) {
         res.status(500).json({

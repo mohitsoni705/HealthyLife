@@ -18,8 +18,8 @@ export const getAllPatient = async()=>{
     const result = await pool.query(`select * from patients`);
     return result.rows;
 }
-export const getOnePatient = async (id: number) => {
-    const result = await pool.query(`select * from patients where patient_id = $1`, [id]);
+export const getOnePatientModel  = async (id: number) => {
+    const result = await pool.query(`select * from patients where patient_id =${id}`);
     return result.rows[0] || null;
 };
 

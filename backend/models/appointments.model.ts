@@ -19,19 +19,19 @@ export const getAppoointments = async()=>{
     const result = await pool.query(`select * from appointments`);
     return result;
 }
-export const getOneAppointmentsData = async({id}:any)=>{
-    const result = await pool.query(`select * from appointments where value = $1 `,[id])as any;
+export const getOneAppointmentsData = async(id:any)=>{
+    const result = await pool.query(`select * from appointments where id = $1 `,[id])as any;
     return result.rows;
 }
 export const updateAppointmentStatus=async(status:string , id:number)=>{
-    const result = await pool.query(`UPDATE table appointments SET status = $1 where id = $2 `,[status,id])
+    const result = await pool.query(`UPDATE appointments SET status = $1 where id = $2 `,[status,id])
     return result.rows[0];
 }
-export const getDoctorScheduleData= async({id}:any)=>{
-    const result = await pool.query(`select * from appointments where id=$1`,[id]);
-    return result.rows[0];
+export const getDoctorScheduleData= async(id:any)=>{
+    const result = await pool.query(`select * from appointments where doctor_id=$1`,[id]);
+    return result.rows;
 }
-export const getPatientScheduleData= async({id}:any)=>{
-    const result = await pool.query(`select * from appointments where id=$1`,[id]);
-    return result.rows[0];
+export const getPatientScheduleData= async(id:any)=>{
+    const result = await pool.query(`select * from appointments where patient_id=$1`,[id]);
+    return result.rows;
 }
