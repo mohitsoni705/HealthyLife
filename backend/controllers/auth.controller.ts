@@ -7,6 +7,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email , password} = req.body;
 
     const user = await getUserByMail(email);
+    console.log(user)
     if(!user){
         return res.status(404).json({
             "message":"User Does'nt exist"

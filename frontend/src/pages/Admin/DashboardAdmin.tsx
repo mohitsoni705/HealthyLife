@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
-import Button from '../components/Button'
+import { SidebarAdmin } from './SidebarAdmin'
+import { ErrorPage } from '../ErrorPage'
+
 
 const DashboardAdmin = () => {
   const navigate = useNavigate()
@@ -11,9 +13,8 @@ const DashboardAdmin = () => {
 
   return (
     <div>
-    <Link to="/patients">
-    <Button innerText="Patient" variant="secondary"/></Link>
-    <Button innerText="Signout" onClick={logout}/> 
+      <SidebarAdmin/>
+      <ErrorPage/>
     </div>
   )
 }

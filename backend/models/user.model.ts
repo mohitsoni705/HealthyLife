@@ -10,11 +10,11 @@ export const existignUser = async(username:string)=>{
     return result.rows.length>0;
 }
 export const createUser =async(username:string , password:string , role:string ,email:string)=>{
-     await pool.query(`insert into users_data(username, password , role , email) values ($1,$2,$3,$4)`,[username,password,role,email]);
+     await pool.query(`insert into users_data (username, password , role , email) values ($1,$2,$3,$4)`,[username,password,role,email]);
 }
 
 
 export const getUserByMail = async(email:string)=>{
-    const result=await pool.query(`select * from users_data where email =$1 LIMIT 1 `,[email])as any;
+    const result = await pool.query(`SELECT * FROM users_data WHERE email = $1 `,[email])as any;
     return result.rows[0]||null;
 }

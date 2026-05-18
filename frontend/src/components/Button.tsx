@@ -4,13 +4,18 @@ const variants = {
   secondary: "bg-white text-blue-500 border border-blue-500 "
 }as any;
 
+const sizes ={
+  md:" px-10 py-2 ",
+  sm:" px-5 py-2 ",
+  lg:" px-20 py-4 " 
+}as any;
 const defaultDesign =
-  "w-full px-20 py-4 rounded-full font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg";
+  "w-full rounded-full font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg";
 
-const Button = ({ innerText, variant = "primary" ,onClick, loading}:any) => {
+const Button = ({ innerText, variant = "primary" ,onClick, loading , size = "lg"}:any) => {
   return (
     <button 
-      className={`${defaultDesign} ${variants[variant]} ${loading ? "opacity-70 cursor-not-allowed" : ""}`} 
+      className={`${defaultDesign} ${variants[variant]} ${sizes[size]} ${loading ? "opacity-70 cursor-not-allowed" : ""}`} 
       onClick={loading ? null : onClick}
       disabled={loading}
     >

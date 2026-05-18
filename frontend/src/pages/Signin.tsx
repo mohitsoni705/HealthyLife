@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
 import { Link } from 'react-router-dom';
+import { Ear } from 'lucide-react';
 
 const Signin = () => {
   const [error, setError] = useState("");
@@ -14,21 +15,28 @@ const Signin = () => {
   const passwordRef = useRef<any>(null);
   const navigate = useNavigate();
 
+  const emailVerifier=(email:string)=>{
+     for(let i = 0 ; i<email.length; i++){
+        if(email[i]=='@'){
+          return true;
+        }
+     }
+  }
   const signin = async () => {
-    const email = emailRef.current?.value;
+    const em = emailRef.current?.value;
     const password = passwordRef.current?.value;
-
+    const email = em.trim().toLowerCase();
     if (!email || !password) {
       setError("Please fill all fields");
       return;
     }
-
     try {
       setError("");
       setLoading(true);
       const res = await axios.post(`${BACKEND_URL}/auth/login`, { email, password });
       const token = res.data.token;
       localStorage.setItem("token", token);
+      console.log(email);
 
       // Decode JWT to get role (base64 decode the payload)
       const payload = JSON.parse(atob(token.split('.')[1]));
