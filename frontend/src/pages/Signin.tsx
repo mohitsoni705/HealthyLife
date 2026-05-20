@@ -21,6 +21,7 @@ const Signin = () => {
           return true;
         }
      }
+     return false;
   }
   const signin = async () => {
     const em = emailRef.current?.value;
@@ -29,6 +30,11 @@ const Signin = () => {
     if (!email || !password) {
       setError("Please fill all fields");
       return;
+    }
+    if(!emailVerifier(email)){
+      setError("Please enter correct email id");
+      return;
+
     }
     try {
       setError("");

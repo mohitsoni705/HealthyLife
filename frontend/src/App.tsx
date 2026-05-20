@@ -7,10 +7,14 @@ import DashboardAdmin from "./pages/Admin/DashboardAdmin"
 import HomeRedirect from "./pages/HomeRedirect"
 import SplashScreen from "./components/SplashScreen"
 import Onboarding from "./pages/Onboarding"
-
-import Patients from "./pages/Patients"
 import Home from "./pages/Home"
 import AdminLayout from "./pages/Admin/AdminLayout"
+import Appointments from "./pages/Admin/Appointments"
+import Patients from "./pages/Admin/Patients"
+import User from "./pages/Admin/Users"
+import Doctors from "./pages/Admin/Doctors"
+import Billing from "./pages/Admin/Billing"
+import Reports from "./pages/Admin/Reports"
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -32,11 +36,11 @@ const App = () => {
           <Route path="/dashboard-admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<DashboardAdmin />} />
           <Route path="patients" element={<Patients />} />
-          <Route path="users" element={<div>Users Page</div>} />
-          <Route path="doctors" element={<div>Doctors Page</div>} />
-          <Route path="appointments" element={<div>Appointments Page</div>} />
-          <Route path="billing" element={<div>Billing Page</div>} />
-          <Route path="reports" element={<div>Reports Page</div>} />
+          <Route path="users" element={<User/>} />
+          <Route path="doctors" element={<Doctors/>} />
+          <Route path="appointments" element={<Appointments/>} />
+          <Route path="billing" element={<Billing/>} />
+          <Route path="reports" element={<Reports/>} />
           </Route>
         </Routes>
       </BrowserRouter>
