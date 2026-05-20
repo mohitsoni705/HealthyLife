@@ -1,17 +1,16 @@
-import { Calendar, ChartPie, Dock, DollarSign, PaletteIcon, PlusIcon, Stethoscope, User, User2, Users } from "lucide-react";
+import { Calendar, Calendar1, ChartPie, Dock, DollarSign, PaletteIcon, PlusIcon, Stethoscope, User, User2, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-export const NavbarReception = () => {
+export const NavbarDoctor = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const menuItems = [
-    { name: "Patients", path: "Patients", icon: <Users/> },
-    { name: "Appointments", path: "Appointments", icon:<Calendar/> },
-    { name: "Billing", path: "Billing", icon: <DollarSign/> },
-    { name: "Reports", path: "Reports", icon: <ChartPie/> },
+      { name: "Patients", path: "patients", icon:<Users/> },
+      { name: "Records", path: "records", icon: <ChartPie/>},
+      { name: "Schedule", path: "schedule", icon: <Calendar1/> },
   ];
 
   const logout = () => {
@@ -72,7 +71,7 @@ export const NavbarReception = () => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="bg-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2"
               >
-                <span className="flex flex-row gap-2 items-center"><User2/> Reception</span>
+                <span className="flex flex-row gap-2 items-center"><User2/> Doctor </span>
                 <span className="text-sm">▼</span>
               </button>
 

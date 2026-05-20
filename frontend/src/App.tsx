@@ -16,6 +16,9 @@ import Doctors from "./pages/Admin/Doctors"
 import Billing from "./pages/Reception/Billing"
 import Reports from "./pages/Reception/Reports"
 import DashboardReception from "./pages/Reception/DashboardReception"
+import DashboardDoctor from "./pages/Doctor/DashboardDoctor"
+import Records from "./pages/Doctor/Records"
+import Schedule from "./pages/Doctor/Schedule"
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -48,6 +51,12 @@ const App = () => {
           <Route path="billing" element={<Billing/>} />
           <Route path="reports" element={<Reports/>} />
           <Route path="patients" element={<Patients />} />
+          <Route path="patients" element={<Patients />} />
+          </Route>
+          <Route path="/dashboard-doctor" element={<ProtectedRoute><DashboardDoctor/></ProtectedRoute>}>
+          <Route path="patients" element={<Patients />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="records" element={<Records />} />
           </Route>
         </Routes>
       </BrowserRouter>
