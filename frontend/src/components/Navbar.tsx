@@ -9,10 +9,15 @@ const Navbar = () => {
     setToggle((current) => !current)
   }
   const navigate = useNavigate()
-
   const selectRole = (role: string) => {
+
+    
     localStorage.setItem('selectedRole', role)
-    navigate('/signup')
+    if(role === "admin"){
+      navigate('/signup')
+    }else{
+      navigate("/signin");
+    }
   }
   return (
     <nav className="relative bg-blue-500 text-white shadow-md">

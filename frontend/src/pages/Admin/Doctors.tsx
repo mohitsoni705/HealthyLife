@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
+import Button from "../../components/Button";
+import DoctorAddModel from "../../components/DoctorAddModel";
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [open , setOpen] = useState(false);
 
   const fetchDoctors = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/doctors`);
-      setDoctors(response.data.doctors || []);
+      const response = await axios.get(`${BACKEND_URL}/users`);
+      setDoctors(response.data.user || []);
     } catch (err) {
       setError("Failed to fetch doctors");
     } finally {
@@ -22,15 +25,22 @@ const Doctors = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [2000]);
+
 
   const filteredDoctors = doctors.filter(
     (doctor: any) =>
       doctor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
+      doctor.specialty?.toLowerCase().includes(searchTerm.toLowerCase())||
+      doctor.role==="doctor"
   );
 
   return (
+    <div>
+        {open?
+            <div className="flex justify-center">
+            <DoctorAddModel setOpen={setOpen}/>
+            </div>:""}
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
@@ -54,9 +64,7 @@ const Doctors = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
-        <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition">
-          + Add Doctor
-        </button>
+        <Button innerText="+ Add Doctor"  onClick={()=>{setOpen(!open)}} size="sm" variant="blue" />
       </div>
 
       {/* Doctors Grid */}
@@ -86,7 +94,7 @@ const Doctors = () => {
                   <p className="text-sm text-gray-700"><strong>Experience:</strong> {doctor.experience || "N/A"} years</p>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                  <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition" onClick={()=>setOpen(!open)}>
                     Edit
                   </button>
                   <button className="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition">
@@ -98,6 +106,7 @@ const Doctors = () => {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 };

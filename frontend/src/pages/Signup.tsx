@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BACKEND_URL } from '../config';
 import { LeftChevron, Logo } from '../Icon/Icon';
 import SignUpForm from '../components/SignUpForm';
 
@@ -12,6 +11,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [checkBox ,setCheckBox] = useState(false);
 
   const role = localStorage.getItem('selectedRole') || 'doctor';
 
@@ -24,7 +24,10 @@ const Signup = () => {
       setError("Please fill all fields");
       return;
     }
-
+    if(!checkBox){
+       setError("Please agree to terms and conditions");
+       return;
+       }
     try {
       setError("");
       setLoading(true);
@@ -41,7 +44,7 @@ const Signup = () => {
       setLoading(false);
       if (err.response && err.response.status === 401) {
         setError("User already exists");
-      } else {
+      }else{
         setError("Server error. Please try again later.");
       }
     }
@@ -76,7 +79,7 @@ const Signup = () => {
         </div>
 
         <div className='w-full max-w-md'>
-          <SignUpForm nameRef={nameRef} passwordRef={passwordRef} emailRef={emailRef} signup={signup} loading={loading} error={error} />
+          <SignUpForm nameRef={nameRef} passwordRef={passwordRef} emailRef={emailRef} signup={signup} loading={loading} error={error} setCheckBox={setCheckBox} checkBox={checkBox} />
         </div>
       </div>
     </div>

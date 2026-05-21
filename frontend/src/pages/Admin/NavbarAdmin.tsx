@@ -10,12 +10,12 @@ export const NavbarAdmin = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Users", path: "Users", icon: <User/>},
-    { name: "Doctors", path: "Doctors", icon: <Stethoscope/> },
-    { name: "Patients", path: "Patients", icon: <Users/> },
-    { name: "Appointments", path: "Appointments", icon:<Calendar/> },
-    { name: "Billing", path: "Billing", icon: <DollarSign/> },
-    { name: "Reports", path: "Reports", icon: <ChartPie/> },
+    { name: "Users", path: "users", icon: <User/>},
+    { name: "Doctors", path: "doctors", icon: <Stethoscope/> },
+    { name: "Patients", path: "patients", icon: <Users/> },
+    { name: "Appointments", path: "appointments", icon:<Calendar/> },
+    { name: "Billing", path: "billing", icon: <DollarSign/> },
+    { name: "Reports", path: "reports", icon: <ChartPie/> },
   ];
 
   const logout = () => {
@@ -30,7 +30,7 @@ export const NavbarAdmin = () => {
   return (
     <>
       {/* Top Navbar */}
-      <nav className="bg-gradient-to-r from-blue-400 to-blue-200 shadow-lg fixed w-full top-0 z-50">
+      <nav className="bg-gradient-to-r from-blue-400 to-blue-200 shadow-lg w-full top-0 z-50">
         <div className="px-6 py-4 flex items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center gap-3">

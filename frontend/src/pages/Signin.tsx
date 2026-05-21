@@ -6,8 +6,6 @@ import { useRef, useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
 import { Link } from 'react-router-dom';
-import { Ear } from 'lucide-react';
-
 const Signin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,6 +13,7 @@ const Signin = () => {
   const passwordRef = useRef<any>(null);
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("selectedRole");
   const emailVerifier=(email:string)=>{
      for(let i = 0 ; i<email.length; i++){
         if(email[i]=='@'){
@@ -95,12 +94,14 @@ const Signin = () => {
             </p>
             {error && <p className='text-red-500 text-sm mb-4 text-center font-medium'>{error}</p>}
             <Button innerText="Sign in" variant="primary" onClick={signin} loading={loading} />
+            {role==="admin"?
             <div className='text-center text-sm text-gray-600 mt-4'>
               Don't have an account?{" "}
               <span className='text-blue-500 font-medium cursor-pointer'>
-                <Link to="/select-role">Sign Up</Link>
+                <Link to="/signup">Sign Up</Link>
               </span>
             </div>
+            :<div className='text-center text-sm text-blue-600 mt-4'>Contact Administrator For Account</div>}
           </div>
         </div>
       </div>

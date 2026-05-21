@@ -37,7 +37,7 @@ const App = () => {
           <Route path="/select-role" element={<Home/>}/>
           <Route path="/signin" element={<Signin/>} />
           <Route path="/signup" element={<Signup/>} />
-          <Route path="/dashboard-admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+          <Route path="/dashboard-admin" element={<ProtectedRoute allowedRole={"admin"}><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<DashboardAdmin />} />
           <Route path="patients" element={<Patients />} />
           <Route path="users" element={<User/>} />
@@ -46,14 +46,14 @@ const App = () => {
           <Route path="billing" element={<Billing/>} />
           <Route path="reports" element={<Reports/>} />
           </Route>
-          <Route path="/dashboard-reception" element={<ProtectedRoute><DashboardReception/></ProtectedRoute>}>
+          <Route path="/dashboard-reception" element={<ProtectedRoute allowedRole={"reception"}><DashboardReception/></ProtectedRoute>}>
           <Route path="appointments" element={<Appointments/>} />
           <Route path="billing" element={<Billing/>} />
           <Route path="reports" element={<Reports/>} />
           <Route path="patients" element={<Patients />} />
           <Route path="patients" element={<Patients />} />
           </Route>
-          <Route path="/dashboard-doctor" element={<ProtectedRoute><DashboardDoctor/></ProtectedRoute>}>
+          <Route path="/dashboard-doctor" element={<ProtectedRoute allowedRole={"doctor"}><DashboardDoctor/></ProtectedRoute>}>
           <Route path="patients" element={<Patients />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="records" element={<Records />} />

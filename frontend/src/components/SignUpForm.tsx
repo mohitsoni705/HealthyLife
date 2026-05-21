@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Input from './Input'
 import Button from './Button'
 
-const SignUpForm = ({ nameRef, passwordRef, emailRef, signup, loading, error }: any) => {
+const SignUpForm = ({ nameRef, passwordRef, emailRef, signup, loading, error ,setCheckBox ,checkBox}: any) => {
   return (
     <div className='w-full max-w-md space-y-6'>
       <Input
@@ -23,7 +23,7 @@ const SignUpForm = ({ nameRef, passwordRef, emailRef, signup, loading, error }: 
         reference={passwordRef}
       />
       <div className='flex items-center justify-center gap-3 text-sm text-gray-600'>
-        <input type='checkbox' className='mt-1 w-5 h-5 rounded-2xl border-gray-300' />
+        <input type='checkbox' className='mt-1 w-5 h-5 rounded-2xl border-gray-300' onClick={()=>setCheckBox(!checkBox)}/>
         <p>
           I agree to the healthcare{" "}
           <span className='text-blue-500 cursor-pointer'>Terms of Service</span>{" "}

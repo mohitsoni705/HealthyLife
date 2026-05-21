@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
+import PatientAddModel from "../../components/PatientAddModel";
+import Button from "../../components/Button";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [open ,setOpen] = useState(false);
 
   const fetchPatients = async () => {
     setIsLoading(true);
@@ -31,6 +34,11 @@ const Patients = () => {
   );
 
   return (
+    <div>
+        {open?
+            <div className="flex justify-center">
+            <PatientAddModel setOpen={setOpen}/>
+            </div>:""}
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
@@ -46,7 +54,7 @@ const Patients = () => {
       )}
 
       {/* Search and Add Button */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6 flex gap-4 flex-col sm:flex-row">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6 flex gap-4 flex-col sm:flex-row ">
         <input
           type="text"
           placeholder="Search by name or email..."
@@ -54,9 +62,7 @@ const Patients = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
-        <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition">
-          + Add Patient
-        </button>
+        <Button innerText="+ Add Patient" onClick={()=>{setOpen(!open)}} size="sm" variant="blue" />
       </div>
 
       {/* Patients Table */}
@@ -118,6 +124,7 @@ const Patients = () => {
           )}
         </div>
       )}
+    </div>
     </div>
   );
 };

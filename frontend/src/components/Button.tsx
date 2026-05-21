@@ -1,7 +1,20 @@
+import type { ReactElement } from "react";
 
+
+interface ButtonProps{
+  innerText:String,
+  variant?:String,
+  onClick?:()=>void,
+  loading?:boolean,
+  size?:String,
+  frontIcon?:ReactElement,
+  BackIcon?:ReactElement
+}
 const variants = {
-  primary: "bg-[#407CE2] hover:bg-blue-600 active:bg-blue-700 text-white",
-  secondary: "bg-white text-blue-500 border border-blue-500 "
+  primary: "w-full bg-[#407CE2] hover:bg-blue-600 active:bg-blue-700 text-white",
+  secondary: "w-full bg-white text-blue-500 border border-blue-500 ",
+  green: "bg-green-500 text-white border border-green-600 hover:bg-gradient-to-r hover:from-green-400 hover:to-green-300 ",
+  blue: "  bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:shadow-lg "
 }as any;
 
 const sizes ={
@@ -10,15 +23,17 @@ const sizes ={
   lg:" px-20 py-4 " 
 }as any;
 const defaultDesign =
-  "w-full rounded-full font-semibold text-lg transition-all duration-200 shadow-md hover:shadow-lg";
+  " rounded-full   font-semibold text-lg transition-all  duration-200 shadow-md hover:shadow-lg ";
 
-const Button = ({ innerText, variant = "primary" ,onClick, loading , size = "lg"}:any) => {
+const Button = ({ innerText, variant = "primary" ,onClick, loading , size = "lg" , frontIcon , BackIcon}:ButtonProps) => {
   return (
     <button 
-      className={`${defaultDesign} ${variants[variant]} ${sizes[size]} ${loading ? "opacity-70 cursor-not-allowed" : ""}`} 
-      onClick={loading ? null : onClick}
+      className={`${defaultDesign} ${variants[variant as any]} ${sizes[size as any]} ${loading ? "opacity-70 cursor-not-allowed" : ""}`} 
+      onClick={loading ? undefined : onClick}
       disabled={loading}
     >
+      <div className="flex flex-row justify-center ">
+      <span>{frontIcon}</span>
       <div className="flex items-center justify-center gap-2">
         {loading && (
           <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -26,8 +41,9 @@ const Button = ({ innerText, variant = "primary" ,onClick, loading , size = "lg"
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         )}
-        <span>{loading ? "Loading..." : innerText}</span>
+        <span >{loading ? "Loading..." : innerText}</span>
       </div>
+        </div>
     </button>
   );
 };
