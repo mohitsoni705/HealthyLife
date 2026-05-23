@@ -1,6 +1,6 @@
 import { useState } from "react"
 import Button from "./Button"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false)
@@ -22,9 +22,11 @@ const Navbar = () => {
   return (
     <nav className="relative bg-blue-500 text-white shadow-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+      <Link to="/dashboard-admin">
         <div className="flex items-center gap-2">
           <div className="text-2xl font-bold tracking-tight">MyHealth</div>
         </div>
+      </Link>
 
         <div className="hidden items-center gap-3 md:flex">
           <Button innerText="Admin" size="sm" variant="secondary" onClick={() => selectRole('admin')}/>

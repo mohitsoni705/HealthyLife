@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.ts"
 import patientsRoutes from "./routes/patient.routes.ts"
 import appointmentRoutes from "./routes/appointments.routes.ts"
 import userRoutes from "./routes/user.routes.ts";
+import doctorRoutes from "./routes/doctor.routes.ts";
 import cors from "cors";
 const app = express();
 
@@ -14,4 +15,5 @@ app.use("/api/v1/auth",authRoutes)
 app.use("/api/v1/patients",patientsRoutes)
 app.use("/api/v1",appointmentRoutes);
 app.use("/api/v1",userRoutes)
+app.use("/api/v1",doctorRoutes)
 export default app;

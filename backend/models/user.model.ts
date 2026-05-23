@@ -9,8 +9,12 @@ export const existignUser = async(username:string)=>{
     const result = await pool.query(`select * from users_data where username = $1 `,[username])as any;
     return result.rows.length>0;
 }
-export const createUser =async(username:string , password:string , role:string ,email:string)=>{
-     await pool.query(`insert into users_data (username, password , role , email) values ($1,$2,$3,$4)`,[username,password,role,email]);
+export const createUser =async(username:string , password:string , role:string ,email:string ,status="active")=>{
+     await pool.query(`insert into users_data (username, password , role , email , status) values ($1,$2,$3,$4,$5)`,[username,password,role,email,status]);
+}
+export const addUser =async(username:string , password:string , role:string ,email:string ,status="active")=>{
+     const result = await pool.query(`insert into users_data (username, password , role , email , status) values ($1,$2,$3,$4,$5) RETURNING user_id`,[username,password,role,email,status]);
+     return result.rows[0].user_id || null
 }
 
 export const getUserByMail = async(email:string)=>{
@@ -23,12 +27,13 @@ export const getAllUser = async()=>{
     return result.rows;
 }
 
-export const updateUserData = async(username:string,email:string,status:string,role:string,user_id:number)=>{
-    const result = await pool.query(`update users_data set username=$1 , email = $2 , status=$3 , role = $4 where user_id = $5 RETURNING *`,[username,email,status,role]);;
+export const updateUserData = async(username:string,email:string,status:string,role:string,user_id:any)=>{
+    const result = await pool.query(`update users_data set username=$1 , email = $2 , status=$3 , role = $4 where user_id = $5 RETURNING *`,[username,email,status,role,user_id]);;
     return result.rows[0];
 }
 
+
 export const deleteUserData =async(user_id:number)=>{
-    const result = await pool.query(`delete users_data where user_id =$1 RETURNING`,[user_id]);
+    const result = await pool.query(`delete from users_data where user_id =$1 `,[user_id]);
     return result.rows[0];
 }

@@ -8,7 +8,10 @@ const PatientAddModel = ({open , setOpen , edit}:any) => {
         
     }
     if(open && !edit){
-
+      //data add hoga
+      //doctor's ki list ayegi
+      //doctor ki appointment fix karnege
+      //  
     }
   return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -27,32 +30,33 @@ const PatientAddModel = ({open , setOpen , edit}:any) => {
         <form className="flex flex-col gap-4">
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Username
+              PatientName
             </label>
-            <Input placeholder="Enter username" reference={usernameRef} />
+            <Input placeholder="Enter username" reference={usernameRef} variant="secondary" />
           </div>
             <label className="text-sm font-medium text-gray-700">
-              Password
+              Phone
             </label>
-            <Input placeholder="Enter username"/>
-
+            <Input placeholder="Enter username" variant="secondary"/>
+            <label className="text-sm font-medium text-gray-700">
+              Date of birth:
+            </label>
+           <input type="date" className="flex bg-gray-300/50 items-center gap-3 py-4 px-5 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all"/>
           <div>
             <label className="text-sm font-medium text-gray-700 ">
-              Role
+              Gender
             </label>
-            <select className=" flex bg-gray-300/50 items-center gap-3 py-4 px-5 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all">
-                <option value="">Select Role</option>
-                <option value="admin">Admin</option>
-                <option value="doctor">Doctor</option>
-                <option value="reception">Reception</option>
+            <select className="flex bg-gray-300/50 items-center gap-3 py-4 px-5 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all">
+                <option value="">Select Gender</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
             </select>
           </div>
-
           <div>
             <label className="text-sm font-medium text-gray-700">
-              Status
+              Address
             </label>
-            <Input placeholder="Active / Inactive"  />
+            <Input placeholder="Enter address"  />
           </div>
 
           <div>

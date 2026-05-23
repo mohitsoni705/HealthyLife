@@ -33,6 +33,7 @@ export const NavbarAdmin = () => {
       <nav className="bg-gradient-to-r from-blue-400 to-blue-200 shadow-lg w-full top-0 z-50">
         <div className="px-6 py-4 flex items-center justify-between">
           {/* Logo/Brand */}
+          <Link to="/dashboard-admin">
           <div className="flex items-center gap-3">
             <div className="bg-white rounded-lg p-2">
               <span className="text-red-600"><PlusIcon/></span>
@@ -41,6 +42,7 @@ export const NavbarAdmin = () => {
               MyHealth Admin
             </h1>
           </div>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-1">
@@ -137,9 +139,7 @@ export const NavbarAdmin = () => {
           </div>
         )}
       </nav>
-
-      {/* Spacing for fixed navbar */}
-      <div className="h-20"></div>
+      <div className="h-10"></div>
     </>
   );
 };

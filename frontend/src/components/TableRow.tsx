@@ -9,7 +9,7 @@ const TableRow = ({user,setOpen,setEdit,setSelectedUser}:any) => {
             setDeleting(true);
           const response = await axios.delete(`${BACKEND_URL}/user/${id}`);
           console.log(response.data.msg);
-        //   fetchUsers();
+          // fetchUsers();
          }catch(err){
            console.log("Inavlid")
          }finally{
@@ -43,7 +43,7 @@ const TableRow = ({user,setOpen,setEdit,setSelectedUser}:any) => {
                           Edit
                         </button>
                         <button className="text-red-600 hover:text-red-800 font-semibold transition" onClick={()=>handleDeleteButton(user.user_id)}>
-                         {deleting?"Deleting...":"Delete"}
+                        {deleting?"Deleting":"Delete"}
                         </button>
                       </td>
                     </tr>

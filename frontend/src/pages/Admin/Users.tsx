@@ -17,7 +17,7 @@ const Users = () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/users`);
       setUsers(response.data.user || []);
-
+      console.log(users);
     } catch (err) {
       setError("Failed to fetch users");
     } finally {
@@ -34,7 +34,9 @@ const Users = () => {
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  // const handleRefresh=()=>{
+  //   fetchUsers()
+  // }
   return (
     <div>
         <div className="flex justify-center">
@@ -66,7 +68,6 @@ const Users = () => {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
       </div>
-
       {/* Users Table */}
       {isLoading ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">

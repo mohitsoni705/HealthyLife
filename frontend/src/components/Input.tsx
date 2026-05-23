@@ -5,11 +5,12 @@ import { EyeCloseIcon } from "../Icon/Icon";
 
 
 const variants = {
-  primary: "bg-gray-100",
-  password: "bg-gray-100"
+  primary: "bg-gray-100 py-4 px-5 ",
+  password: "bg-gray-100 py-4 px-5 ",
+  secondary:"py-2 px-3 bg-gray-100 "
 }as any;
 
-const defaultDesign ="w-full flex items-center gap-3 py-4 px-5 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all";
+const defaultDesign ="w-full flex items-center gap-3 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all";
 
 const Input = ({
   placeholder,
