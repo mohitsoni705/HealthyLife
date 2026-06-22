@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { useState } from "react";
-const DoctorCard = ({doctor , setOpen , open }:any) => {
+const DoctorCard = ({doctor , setOpen , open , setSelectedDoctor , setEdit}:any) => {
     const [loading , setLoading ] = useState(false);
 
     const handleDeleteButton =async(id:any)=>{
@@ -28,10 +28,9 @@ const DoctorCard = ({doctor , setOpen , open }:any) => {
                   <p className="text-sm text-gray-700"><strong>Email:</strong> {doctor.email}</p>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition" onClick={()=>{setOpen(!open);}}>
+                  <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition" onClick={()=>{setOpen(!open); setSelectedDoctor(doctor); setEdit(true)}}>
                     Edit
                   </button>
-                  
                   <button className={`flex-1 ${loading?"bg-red-900":"bg-red-600"} text-white py-2 rounded-lg font-semibold  transition`} disabled={loading?true:false} onClick={()=>handleDeleteButton(doctor.user_id)}>
                     Delete
                   </button>

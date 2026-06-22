@@ -3,40 +3,45 @@ import axios from "axios";
 import { BACKEND_URL } from "../../config";
 import { UserAddModel } from "../../components/UserAddModel";
 import TableRow from "../../components/TableRow";
+import useUserContent from "../../Hooks/useUserContent";
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [open , setOpen ]= useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  // const {contents , refresh} = useUserContent();
+
+  const token = localStorage.getItem("token");
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/users`);
+      const response = await axios.get(`${BACKEND_URL}/users`,{
+        headers:{
+          "authorization":token
+        }
+      });
       setUsers(response.data.user || []);
+      // setUsers(contents)
       console.log(users);
     } catch (err) {
       setError("Failed to fetch users");
     } finally {
       setIsLoading(false);
     }
-  };
+  } 
 
-  useEffect(() => {
+  useEffect(()=>{
     fetchUsers();
-  }, []);
-
+  },[])
   const filteredUsers = users.filter(
     (user: any) =>
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  // const handleRefresh=()=>{
-  //   fetchUsers()
-  // }
   return (
     <div>
         <div className="flex justify-center">

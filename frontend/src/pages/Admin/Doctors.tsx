@@ -11,13 +11,20 @@ const Doctors = () => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [open , setOpen] = useState(false);
+  const [selectedDoctor , setSelectedDoctor] =  useState(null);
+  const [edit , setEdit] = useState(false);
+
+  const token = localStorage.getItem("token");
 
   const fetchDoctors = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/users`);
+      const response = await axios.get(`${BACKEND_URL}/users`,{
+        headers:{
+          "authorization":token
+        }
+      });
       setDoctors(response.data.user || []);
-      console.log(response.data.user)
     } catch (err) {
       setError("Failed to fetch doctors");
     } finally {
@@ -27,7 +34,7 @@ const Doctors = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [1000]);
 
 
   const filteredDoctors = doctors.filter(
@@ -39,7 +46,7 @@ const Doctors = () => {
   return (
     <div>
           <div className="flex justify-center">
-          <DoctorAddModel setOpen={setOpen} open={open}/>
+          <DoctorAddModel setOpen={setOpen} open={open} setEdit={setEdit} edit={edit} selectedDoctor={selectedDoctor}/>
           </div>
     <div className="max-w-7xl mx-auto">
         <div className="mb-8">
@@ -63,7 +70,7 @@ const Doctors = () => {
         />
         <Button innerText="+ Add Doctor"  onClick={()=>{setOpen(!open)}} size="sm" variant="blue" />
       </div>
-      
+
       {isLoading ? (
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
           <div className="inline-block animate-spin text-4xl">⏳</div>
@@ -77,7 +84,7 @@ const Doctors = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDoctors.map((doctor: any) => (
-            <DoctorCard doctor={doctor} key={doctor.user_id} setOpen={setOpen} open={open}/>
+            <DoctorCard doctor={doctor} key={doctor.user_id} setEdit={setEdit} setOpen={setOpen} open={open} setSelectedDoctor={setSelectedDoctor}/>
           ))}
         </div>
       )}

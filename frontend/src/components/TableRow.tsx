@@ -1,19 +1,20 @@
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { useState } from "react";
+import useUserContent from "../Hooks/useUserContent";
 
 const TableRow = ({user,setOpen,setEdit,setSelectedUser}:any) => {
+  const {contents,refresh} = useUserContent();
     const [deleting , setDeleting] = useState(false);
     const handleDeleteButton=async(id:any)=>{
          try{
             setDeleting(true);
-          const response = await axios.delete(`${BACKEND_URL}/user/${id}`);
-          console.log(response.data.msg);
-          // fetchUsers();
+            await axios.delete(`${BACKEND_URL}/user/${id}`);
          }catch(err){
            console.log("Inavlid")
          }finally{
-            setDeleting(false);
+          setDeleting(false);
+          refresh();  
          }
       }
       
@@ -42,8 +43,8 @@ const TableRow = ({user,setOpen,setEdit,setSelectedUser}:any) => {
                         <button onClick={()=>{setSelectedUser(user); setEdit(true); setOpen(true); }} className="text-blue-600 hover:text-blue-800 font-semibold mr-3 transition">
                           Edit
                         </button>
-                        <button className="text-red-600 hover:text-red-800 font-semibold transition" onClick={()=>handleDeleteButton(user.user_id)}>
-                        {deleting?"Deleting":"Delete"}
+                        <button className="text-red-600 hover:text-red-800 font-semibold transition py-4" onClick={()=>handleDeleteButton(user.user_id)}>
+                        {deleting?"wait":"Delete"}
                         </button>
                       </td>
                     </tr>

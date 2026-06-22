@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import Button from "./Button";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
+import useUserContent from "../Hooks/useUserContent";
 
 export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)=>{
      const usernameRef = useRef<any>(null);
@@ -11,6 +12,7 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
     const statusRef = useRef<any>(null);
     const emailRef = useRef<any>(null);
     const [loading , setLoading] = useState(false);
+    const {contents , refresh} = useUserContent();
 
     useEffect(() => {
       if (!open) {
@@ -22,10 +24,7 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
         if (emailRef.current) emailRef.current.value = selectedUser.email || "";
         if (roleRef.current) roleRef.current.value = selectedUser.role || "";
         if (statusRef.current) statusRef.current.value = selectedUser.status || "";
-
-
       }
-
     }, [open, edit, selectedUser]);
 
     const handleSubmitButton=async(e:any)=>{
@@ -48,6 +47,7 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
       }finally{
         setOpen(false);
         setLoading(false);
+        refresh();
       }
     }
     return(

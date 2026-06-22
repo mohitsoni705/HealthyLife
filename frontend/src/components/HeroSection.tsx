@@ -1,8 +1,11 @@
+import { ListEnd } from "lucide-react"
 import Button from "./Button"
+import { Link } from "react-router-dom"
 
-const HeroSection = () => {
+const HeroSection = ({scrollToSection}:any) => {
+  
   return (
-    <section className="bg-white  text-black">
+    <section id="home" className="bg-white  text-black">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl flex-col justify-center px-6 py-16 lg:px-10">
         <div className="max-w-3xl space-y-8">
           <span className="inline-flex rounded-full border border-blue-600 px-4 py-1 text-sm font-semibold uppercase tracking-[0.25em] text-black shadow-sm">
@@ -19,8 +22,8 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Button innerText="Get Started" size="md" variant="primary" />
-            <Button innerText="View Features" size="md" variant="secondary" />
+            <Button innerText="Get Started" size="md" variant="primary"/>
+            <Button innerText="View Features" size="md" variant="secondary" onClick={()=>scrollToSection('feature')}/>
           </div>
         </div>
 

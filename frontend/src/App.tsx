@@ -19,6 +19,9 @@ import DashboardReception from "./pages/Reception/DashboardReception"
 import DashboardDoctor from "./pages/Doctor/DashboardDoctor"
 import Records from "./pages/Doctor/Records"
 import Schedule from "./pages/Doctor/Schedule"
+import { Feather } from "lucide-react"
+import { Features } from "tailwindcss"
+import ViewFeatures from "./pages/ViewFeatures"
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
@@ -34,7 +37,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomeRedirect/>}/>
           <Route path="/onboarding" element={<Onboarding/>}/>
-          <Route path="/select-role" element={<Home/>}/>
+        <Route path="/select-role" element={<Home/>}/>
           <Route path="/signin" element={<Signin/>} />
           <Route path="/signup" element={<Signup/>} />
           <Route path="/dashboard-admin" element={<ProtectedRoute allowedRole={"admin"}><AdminLayout /></ProtectedRoute>}>

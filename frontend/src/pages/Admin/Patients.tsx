@@ -10,11 +10,16 @@ const Patients = () => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [open ,setOpen] = useState(false);
+  const token = localStorage.getItem("token");
 
   const fetchPatients = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/patients`);
+      const response = await axios.get(`${BACKEND_URL}/patients`,{
+        headers:{
+          "authorization":token
+        }
+      });
       setPatients(response.data.patients || []);
     } catch (err) {
       setError("Failed to fetch patients");

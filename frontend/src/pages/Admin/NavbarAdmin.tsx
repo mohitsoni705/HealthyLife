@@ -1,4 +1,4 @@
-import { Calendar, ChartPie, Dock, DollarSign, PaletteIcon, PlusIcon, Stethoscope, User, Users } from "lucide-react";
+import { Calendar, ChartPie, Dock, DollarSign, LogOutIcon, PaletteIcon, PlusIcon, Settings, Stethoscope, User, User2, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Logo } from "../../Icon/Icon";
@@ -35,7 +35,7 @@ export const NavbarAdmin = () => {
           {/* Logo/Brand */}
           <Link to="/dashboard-admin">
           <div className="flex items-center gap-3">
-            <div className="bg-white rounded-lg p-2">
+            <div className="bg-white rounded-sm p-2">
               <span className="text-red-600"><PlusIcon/></span>
             </div>
             <h1 className="text-white text-2xl font-bold hidden sm:block">
@@ -50,10 +50,10 @@ export const NavbarAdmin = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-sm transition-all duration-200 flex items-center gap-2 ${
                   isActive(item.path)
                     ? "bg-white text-blue-600 font-semibold"
-                    : "text-white hover:bg-blue-500"
+                    : "text-white hover:text-blue-600"
                 }`}
               >
                 <span>{item.icon}</span>
@@ -76,9 +76,9 @@ export const NavbarAdmin = () => {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2"
+                className="bg-white text-blue-400 px-4 py-2 rounded-sm font-semibold hover:bg-gray-100 transition flex items-center gap-2"
               >
-                <span>👤 Admin</span>
+                <span> Admin</span>
                 <span className="text-sm">▼</span>
               </button>
 
@@ -90,25 +90,25 @@ export const NavbarAdmin = () => {
                       setIsDropdownOpen(false);
                       // Add profile route here if needed
                     }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                    className=" flex flex-row gap-2 items-center w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                   >
-                    👤 Profile
+                  <User2 size="20" color="gray"/>Profile
                   </button>
                   <button
                     onClick={() => {
                       setIsDropdownOpen(false);
                       // Add settings route here if needed
                     }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                    className="w-full flex flex-row items-center gap-2 text-left px-4 py-2 hover:bg-gray-100 transition"
                   >
-                    ⚙️ Settings
+                    <Settings size={20} color="gray"/> Settings
                   </button>
                   <hr className="my-1" />
                   <button
                     onClick={logout}
-                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 font-semibold transition"
+                    className=" flex flex-row items-center gap-2 w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 font-semibold transition"
                   >
-                    🚪 Logout
+                    <LogOutIcon size="18" /> Logout
                   </button>
                 </div>
               )}
