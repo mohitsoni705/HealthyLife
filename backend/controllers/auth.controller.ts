@@ -13,7 +13,7 @@ export const loginUser = async (req: Request, res: Response) => {
             "message":"User Does'nt exist"
         })
     }
-
+    
     const isMatch = await bcrypt.compare(password,user.password);
 
     if (!isMatch) {

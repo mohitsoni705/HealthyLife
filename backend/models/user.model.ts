@@ -28,7 +28,7 @@ export const getAllUser = async()=>{
 }
 
 export const updateUserData = async(username:string,email:string,status:string,role:string,user_id:any)=>{
-    const result = await pool.query(`update users_data set username=$1 , email = $2 , status=$3 , role = $4 where user_id = $5 RETURNING *`,[username,email,status,role,user_id]);;
+    const result = await pool.query(`update users_data set username=$1 , email=$2 , status=$3 , role=$4 where user_id=$5 RETURNING *`,[username,email,status,role,user_id]);;
     return result.rows[0];
 }
 

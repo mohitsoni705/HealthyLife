@@ -20,3 +20,17 @@ export const getDoctorsData = async()=>{
 export const deleteDoctorDetails = async(user_id:any)=>{
      await pool.query(`delete from doctor where user_id=$1`,[user_id]);
 }
+
+export const updateDoctorDetails = async({specialization , license_no , experience , consultation_fee, user_id}:DoctorProps)=>{
+    const result =await pool.query(`update doctor set specialization=$1 , license_no = $2 , experience=$3 , consultation_fee = $4 where user_id = $5 RETURNING * `,[specialization , license_no , experience , consultation_fee, user_id ]);
+    return result.rows || null;
+}
+
+export const existingDoctor = async(id:number)=>{
+    const result = await pool.query(`select * form doctor  where user_id = $1`,[id]);
+    return result.rows.length>0 || null;
+}
+export const getDoctorData = async(id:number)=>{
+    const result = await pool.query(`select * form doctor where user_id=$1`,[id]);
+    return result.rows || null;
+}

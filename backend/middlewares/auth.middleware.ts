@@ -7,7 +7,7 @@ const UserAuthMiddleware =async(req:Request,res:Response,next:NextFunction)=>{
 
     if(!header){
         res.status(401).json({
-            "message":"No header",
+            message: "Missing authorization token",
         })
         return
     }
@@ -18,10 +18,10 @@ const UserAuthMiddleware =async(req:Request,res:Response,next:NextFunction)=>{
         req.user_id = decoded.user_id;
         next();
     }catch (err) {
-        return res.status(403).json({
+        const cause = err instanceof Error ? err.message : String(err);
+        return res.status(401).json({
             message: "You are not logged in",
-            error:err,
-            tokens:header
+            err: cause
         });
     }
 }
