@@ -35,13 +35,12 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
       const status = statusRef.current.value;
       const email = emailRef.current.value;
       try{
-         const response = await axios.put(`${BACKEND_URL}/user/${selectedUser.user_id}`,{
+         await axios.put(`${BACKEND_URL}/user/${selectedUser.user_id}`,{
           username,
           role,
           status,
           email
         })
-        console.log(response);
       }catch(err){
         console.log("error");
       }finally{
@@ -96,7 +95,7 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
             </label>
             <select className="flex bg-gray-300/50 items-center gap-3 p-2 rounded-sm border border-gray-300 focus-within:border-gray-800 transition-all text-gray-700" ref={statusRef}>
               <option value="active">Active</option>
-              <option value="Inactive">InActive</option>
+              <option value="inactive">InActive</option>
             </select>
           </div>
           </div>

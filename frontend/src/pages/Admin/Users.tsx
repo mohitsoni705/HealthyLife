@@ -3,7 +3,7 @@ import axios from "axios";
 import { BACKEND_URL } from "../../config";
 import { UserAddModel } from "../../components/UserAddModel";
 import TableRow from "../../components/TableRow";
-import useUserContent from "../../Hooks/useUserContent";
+import Refresh from "../../components/Refresh";
 
 const Users = () => {
   const [users, setUsers] = useState<any>([]);
@@ -13,11 +13,11 @@ const Users = () => {
   const [open , setOpen ]= useState(false);
   const [edit, setEdit] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  // const {contents , refresh} = useUserContent();
 
   const token = localStorage.getItem("token");
   const fetchUsers = async () => {
     setIsLoading(true);
+    setError("");
     try {
       const response = await axios.get(`${BACKEND_URL}/users`,{
         headers:{
@@ -25,10 +25,14 @@ const Users = () => {
         }
       });
       setUsers(response.data.user || []);
-      // setUsers(contents)
-      console.log(users);
-    } catch (err) {
-      setError("Failed to fetch users");
+    } catch (err: any) {
+      const data = err.response?.data;
+      const cause = data?.message || data?.msg || data?.err || err.message;
+      if (err.response?.status === 401) {
+        setError(cause || "Unauthorized");
+      } else {
+        setError(cause || "Failed to fetch users");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -36,7 +40,8 @@ const Users = () => {
 
   useEffect(()=>{
     fetchUsers();
-  },[])
+  },[edit , open])
+  
   const filteredUsers = users.filter(
     (user: any) =>
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,11 +54,12 @@ const Users = () => {
         </div>
     <div className="max-w-7xl mx-auto">
       {/* Headjuser */}
-      <div className="flex flex-row justify-between ">
-      <div className="mb-8">
+      <div className="flex flex-row justify-between items-start gap-4 mb-8">
+      <div>
         <h2 className="text-4xl font-bold text-gray-800 mb-2">Users Management</h2>
         <p className="text-gray-600">Manage system users</p>
       </div>
+      <Refresh onClick={fetchUsers} loading={isLoading} />
       </div>
 
       {/* Error Message */}
