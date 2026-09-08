@@ -135,7 +135,7 @@ export const NavbarReception = () => {
       </nav>
 
       {/* Spacing for fixed navbar */}
-      <div className="h-20"></div>
+      <div className="h-5"></div>
     </>
   );
 };

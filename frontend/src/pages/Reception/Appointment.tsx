@@ -1,11 +1,11 @@
-import { ErrorPage } from '../ErrorPage/ErrorPage'
+import ReceptionAppointmentBooking from "../../components/ReceptionAppointmentBooking";
 
 const Appointment = () => {
   return (
-    <div>
-      <ErrorPage/>
-    </div>
-  )
-}
+    <>
+    <ReceptionAppointmentBooking />
+    </>
+  );
+};
 
-export default Appointment
+export default Appointment; 

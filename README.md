@@ -188,7 +188,16 @@ Open the local Vite URL shown in the terminal, normally `http://localhost:5173`.
 
 The frontend API base URL is configured in `frontend/src/config.ts`. Change it when the API runs on a different host or port.
 
-### 3. Build and lint the frontend
+### 3. Enable Calendly and Microsoft Teams for reception
+
+1. In Calendly, connect the hospital’s Microsoft Teams account and create an event type for patient consultations. Set its location to **Microsoft Teams**.
+2. Copy `frontend/.env.example` to `frontend/.env` and replace the example value with that event type’s public Calendly URL.
+3. Restart `npm run dev`.
+4. Reception users can open **Appointments** in their dashboard and schedule on the embedded Calendly page. Calendly sends confirmation messages and includes the Teams meeting link after the booking is made.
+
+`VITE_CALENDLY_EVENT_URL` is intentionally only an event page URL. Do not put a Calendly personal access token, OAuth secret, or Microsoft credentials in a `VITE_` environment variable because Vite exposes it to the browser.
+
+### 4. Build and lint the frontend
 
 ```powershell
 cd frontend

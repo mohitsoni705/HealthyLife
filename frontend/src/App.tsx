@@ -9,7 +9,7 @@ import SplashScreen from "./components/SplashScreen"
 import Onboarding from "./pages/Onboarding"
 import Home from "./pages/Home"
 import AdminLayout from "./pages/Admin/AdminLayout"
-import Appointments from "./pages/Admin/Appointments"
+import Appointments from "./pages/Reception/Appointment"
 import Patients from "./pages/Admin/Patients"
 import User from "./pages/Admin/Users"
 import Doctors from "./pages/Admin/Doctors"
@@ -33,7 +33,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomeRedirect/>}/>
           <Route path="/onboarding" element={<Onboarding/>}/>
-        <Route path="/select-role" element={<Home/>}/>
+          <Route path="/select-role" element={<Home/>}/>
           <Route path="/signin" element={<Signin/>} />
           <Route path="/signup" element={<Signup/>} />
           <Route path="/dashboard-admin" element={<ProtectedRoute allowedRole={"admin"}><AdminLayout /></ProtectedRoute>}>
