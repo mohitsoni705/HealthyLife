@@ -7,8 +7,9 @@ interface DoctorProps{
     experience:Number,
     consultation_fee : Number,
 }
-export const addDoctorData = async({user_id , specialization , license_no , experience , consultation_fee}:DoctorProps)=>{
-    const result = await pool.query(`Insert into doctor (user_id , specialization , license_no , experience , consultation_fee) values($1,$2,$3,$4,$5) RETURNING *`,[user_id , specialization , license_no , experience , consultation_fee]);
+export const addDoctorData = async({user_id , specialization , license_no , experience , consultation_fee}:DoctorProps, client?: any)=>{
+    const db = client || pool;
+    const result = await db.query(`Insert into doctor (user_id , specialization , license_no , experience , consultation_fee) values($1,$2,$3,$4,$5) RETURNING *`,[user_id , specialization , license_no , experience , consultation_fee]);
     return result.rows[0] || null;
 }
 
@@ -27,10 +28,10 @@ export const updateDoctorDetails = async({specialization , license_no , experien
 }
 
 export const existingDoctor = async(id:number)=>{
-    const result = await pool.query(`select * form doctor  where user_id = $1`,[id]);
+    const result = await pool.query(`select * from doctor where user_id = $1`,[id]);
     return result.rows.length>0 || null;
 }
 export const getDoctorData = async(id:number)=>{
-    const result = await pool.query(`select * form doctor where user_id=$1`,[id]);
+    const result = await pool.query(`select * from doctor where user_id=$1`,[id]);
     return result.rows || null;
 }

@@ -5,20 +5,23 @@ export const finduser=async(username:string,password:string)=>{
     const result = await pool.query(`select * from users_data where username=$1 and password = $2 `,[username , password])as any;
     return result.rows[0]||null;
 }
-export const existignUser = async(username:string)=>{
-    const result = await pool.query(`select * from users_data where username = $1 `,[username])as any;
+export const existignUser = async(username:string, client?: any)=>{
+    const db = client || pool;
+    const result = await db.query(`select * from users_data where username = $1 `,[username])as any;
     return result.rows.length>0;
 }
 export const createUser =async(username:string , password:string , role:string ,email:string ,status="active")=>{
      await pool.query(`insert into users_data (username, password , role , email , status) values ($1,$2,$3,$4,$5)`,[username,password,role,email,status]);
 }
-export const addUser =async(username:string , password:string , role:string ,email:string ,status="active")=>{
-     const result = await pool.query(`insert into users_data (username, password , role , email , status) values ($1,$2,$3,$4,$5) RETURNING user_id`,[username,password,role,email,status]);
-     return result.rows[0].user_id || null
+export const addUser =async(username:string , password:string , role:string ,email:string ,status="active", client?: any)=>{
+     const db = client || pool;
+     const result = await db.query(`insert into users_data (username, password , role , email , status) values ($1,$2,$3,$4,$5) RETURNING user_id`,[username,password,role,email,status]);
+     return result.rows[0]?.user_id || null
 }
 
-export const getUserByMail = async(email:string)=>{
-    const result = await pool.query(`SELECT * FROM users_data WHERE email = $1 `,[email])as any;
+export const getUserByMail = async(email:string, client?: any)=>{
+    const db = client || pool;
+    const result = await db.query(`SELECT * FROM users_data WHERE email = $1 `,[email])as any;
     return result.rows[0]||null;
 }
 

@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/doctor",UserAuthMiddleware,addDoctor);
 router.get("/doctor",UserAuthMiddleware,getDoctors);
+router.get("/doctors",UserAuthMiddleware,getDoctors);
 router.delete("/doctor/:id",UserAuthMiddleware,deleteDoctor);
 router.put("/doctor/:id",UserAuthMiddleware,updateDoctor);
 router.get("/doctor/:id",UserAuthMiddleware,getOneDoctor)

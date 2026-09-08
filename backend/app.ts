@@ -11,9 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/v1/auth",authRoutes)
-app.use("/api/v1/patients",patientsRoutes)
-app.use("/api/v1",appointmentRoutes);
-app.use("/api/v1",userRoutes)
-app.use("/api/v1",doctorRoutes)
+app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1", patientsRoutes)
+app.use("/api/v1", patientsRoutes)
+app.use("/api/v1", appointmentRoutes);
+app.use("/api/v1", userRoutes)
+app.use("/api/v1", doctorRoutes)
 export default app;
