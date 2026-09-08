@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom"
 import { NavbarAdmin } from "./NavbarAdmin"
-import DashboardAdmin from "./DashboardAdmin"
 
 const AdminLayout = () => {
   return (

@@ -19,7 +19,7 @@ const useUserContent = () => {
     }
 useEffect(()=>{
     refresh();
-    let interval = setInterval(()=>{
+    const interval = setInterval(()=>{
         refresh();
     },3*1000)
     return()=>{

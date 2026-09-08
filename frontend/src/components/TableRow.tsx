@@ -4,7 +4,7 @@ import { useState } from "react";
 import useUserContent from "../Hooks/useUserContent";
 
 const TableRow = ({user,setOpen,setEdit,setSelectedUser}:any) => {
-  const {contents,refresh} = useUserContent();
+  const { refresh } = useUserContent();
     const [deleting , setDeleting] = useState(false);
     const handleDeleteButton=async(id:any)=>{
          try{

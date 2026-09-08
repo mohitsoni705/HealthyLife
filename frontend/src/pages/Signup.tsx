@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LeftChevron, Logo } from '../Icon/Icon';
@@ -11,7 +11,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [checkBox ,setCheckBox] = useState(false);
+  const [checkBox, setCheckBox] = useState(false);
 
   const role = localStorage.getItem('selectedRole') || 'doctor';
 
@@ -24,10 +24,10 @@ const Signup = () => {
       setError("Please fill all fields");
       return;
     }
-    if(!checkBox){
-       setError("Please agree to terms and conditions");
-       return;
-       }
+    if (!checkBox) {
+      setError("Please agree to terms and conditions");
+      return;
+    }
     try {
       setError("");
       setLoading(true);
@@ -44,7 +44,7 @@ const Signup = () => {
       setLoading(false);
       if (err.response && err.response.status === 401) {
         setError("User already exists");
-      }else{
+      } else {
         setError("Server error. Please try again later.");
       }
     }

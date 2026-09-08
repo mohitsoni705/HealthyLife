@@ -19,10 +19,6 @@ import DashboardReception from "./pages/Reception/DashboardReception"
 import DashboardDoctor from "./pages/Doctor/DashboardDoctor"
 import Records from "./pages/Doctor/Records"
 import Schedule from "./pages/Doctor/Schedule"
-import { Feather } from "lucide-react"
-import { Features } from "tailwindcss"
-import ViewFeatures from "./pages/ViewFeatures"
-
 const App = () => {
   const [showSplash, setShowSplash] = useState(true)
 

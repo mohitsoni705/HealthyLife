@@ -1,4 +1,4 @@
-import { Calendar, Calendar1, ChartPie, Dock, DollarSign, PaletteIcon, PlusIcon, Stethoscope, User, User2, Users } from "lucide-react";
+import { ChartPie, Calendar1, Users, User2, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 export const NavbarDoctor = () => {

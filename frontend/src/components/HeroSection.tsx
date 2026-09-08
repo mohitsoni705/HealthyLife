@@ -1,6 +1,4 @@
-import { ListEnd } from "lucide-react"
 import Button from "./Button"
-import { Link } from "react-router-dom"
 
 const HeroSection = ({scrollToSection}:any) => {
   

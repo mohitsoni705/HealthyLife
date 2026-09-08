@@ -1,7 +1,6 @@
-import { Calendar, ChartPie, Dock, DollarSign, LogOutIcon, PaletteIcon, PlusIcon, Settings, Stethoscope, User, User2, Users } from "lucide-react";
+import { Calendar, ChartPie, DollarSign, LogOutIcon, PlusIcon, Settings, Stethoscope, User, User2, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Logo } from "../../Icon/Icon";
 
 export const NavbarAdmin = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

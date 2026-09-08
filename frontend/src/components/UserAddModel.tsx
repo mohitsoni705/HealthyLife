@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import Input from "./Input"
 import { X } from "lucide-react";
-import Button from "./Button";
+
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import useUserContent from "../Hooks/useUserContent";
@@ -12,7 +12,7 @@ export const UserAddModel= ({open , setOpen , edit, setEdit, selectedUser} :any)
     const statusRef = useRef<any>(null);
     const emailRef = useRef<any>(null);
     const [loading , setLoading] = useState(false);
-    const {contents , refresh} = useUserContent();
+    const { refresh } = useUserContent();
 
     useEffect(() => {
       if (!open) {
