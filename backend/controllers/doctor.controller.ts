@@ -5,6 +5,8 @@ import { addDoctorData, deleteDoctorDetails, existingDoctor, getDoctorData, getD
 import bcrypt from "bcrypt";
 import pool from "../config/db.ts";
 
+const DEFAULT_EVENT_LINK = "https://calendly.com/mohitsoni3820/30min";
+
 export const addDoctor = async (req: Request, res: Response): Promise<void> => {
     const {
         license_no,
@@ -155,8 +157,12 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
 export const getDoctors = async(req:Request,res:Response)=>{
      try{
         const doctor = await getDoctorsData();
+        const doctorWithEventLink = doctor.map((item:any) => ({
+            ...item,
+            event_link: item.event_link || DEFAULT_EVENT_LINK
+        }));
         res.json({
-            doctor
+            doctor: doctorWithEventLink
         })
      }catch(err){
         const cause = err instanceof Error ? err.message : String(err);
@@ -223,9 +229,13 @@ export const getOneDoctor = async(req:Request,res:Response)=>{
             return;
         }
         const data = await getDoctorData(doc_id);
+        const enrichedData = data.map((item:any) => ({
+            ...item,
+            event_link: item.event_link || DEFAULT_EVENT_LINK
+        }));
         res.json({
             msg:"Successfully got doctor data",
-            data
+            data: enrichedData
         })
     } catch(err) {
         const cause = err instanceof Error ? err.message : String(err);

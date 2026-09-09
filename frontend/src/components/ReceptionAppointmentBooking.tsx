@@ -1,54 +1,306 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { CalendarDays, Check, ChevronRight, Clock3, Info, MapPin, Phone, Search, Stethoscope, UserPlus, UserRound } from "lucide-react";
-import AppointmentHeader from "./AppointmentHeader";
+import axios from "axios";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Search,
+  Stethoscope,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { BACKEND_URL } from "../config";
 
-type Patient = { id: string; name: string; age: number; gender: "Male" | "Female"; phone: string; location: string };
 
-const patients: Patient[] = [
-  { id: "P1024", name: "Rahul Sharma", age: 32, gender: "Male", phone: "+91 98765 43210", location: "Jaipur, Rajasthan" },
-  { id: "P1025", name: "Priya Singh", age: 28, gender: "Female", phone: "+91 99876 12034", location: "Jaipur, Rajasthan" },
-  { id: "P1026", name: "Arjun Mehta", age: 45, gender: "Male", phone: "+91 98111 22334", location: "Jaipur, Rajasthan" },
-  { id: "P1027", name: "Sneha Kapoor", age: 23, gender: "Female", phone: "+91 98765 87878", location: "Jaipur, Rajasthan" },
-  { id: "P1028", name: "Vikash Kumar", age: 50, gender: "Male", phone: "+91 99000 11779", location: "Jaipur, Rajasthan" },
-];
-const doctors = ["Dr. Ananya Verma", "Dr. Rohan Gupta", "Dr. Meera Iyer"];
-const steps = ["Select Patient", "Select Doctor", "Choose Date & Time", "Confirm & Book"];
-const initials = (name: string) => name.split(" ").map((word) => word[0]).slice(-2).join("");
+type Doctor = {
+  user_id: number;
+  username?: string;
+  email?: string;
+  specialization?: string;
+  specialty?: string;
+  experience?: number;
+  consultation_fee?: number;
+  calendly_event_type_uri?: string;
+};
 
-export default function ReceptionAppointmentBooking() {
-  const [query, setQuery] = useState("");
-  const [patient, setPatient] = useState<Patient>(patients[0]);
-  const [doctor, setDoctor] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [step, setStep] = useState(1);
-  const shownPatients = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    return term ? patients.filter((item) => `${item.name} ${item.id} ${item.phone}`.toLowerCase().includes(term)) : patients;
-  }, [query]);
-  const canProceed = Boolean(patient && (step === 1 || doctor) && (step < 3 || date && time));
-
-  return <section className="mx-auto max-w-[1400px] space-y-5">
-    <AppointmentHeader />
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><ol className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-3">
-      {steps.map((label, index) => { const number = index + 1; const active = number === step; const complete = number < step; return <li key={label} className="relative flex items-center gap-3 md:flex-col md:items-start">{index > 0 && <span className="absolute -left-[52%] top-5 hidden h-px w-[55%] bg-blue-200 md:block" />}<span className={`z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold ${active || complete ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "bg-slate-100 text-slate-600 ring-1 ring-slate-200"}`}>{complete ? <Check size={16} /> : number}</span><span className={`text-sm font-semibold ${active ? "text-blue-700" : "text-slate-500"}`}>{label}</span></li>; })}
-    </ol></div>
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.75fr)_minmax(280px,.78fr)_minmax(270px,.75fr)]">
-      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-        {step === 1 && <><h2 className="text-lg font-bold text-slate-900">1. Select Patient</h2><p className="mt-1 text-sm text-slate-500">Search for an existing patient or register a new one</p><div className="mt-5 flex flex-col gap-3 sm:flex-row"><label className="flex h-12 flex-1 items-center gap-3 rounded-lg border border-blue-100 px-3 text-slate-500 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 outline-none placeholder:text-slate-400" placeholder="Search by name, patient ID, or phone number..." /></label><button type="button" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-blue-500 px-4 text-sm font-semibold text-blue-600 hover:bg-blue-50"><UserPlus size={17} /> Register New Patient</button></div><h3 className="mt-5 text-sm font-bold text-slate-800">Recent Patients</h3><div className="mt-3 overflow-hidden rounded-xl border border-slate-100">{shownPatients.map((item) => { const selected = patient.id === item.id; return <button type="button" onClick={() => { setPatient(item); setStep(1); }} key={item.id} className={`flex w-full items-center gap-3 border-b border-slate-100 p-3 text-left last:border-0 hover:bg-blue-50 ${selected ? "bg-blue-50" : "bg-white"}`}><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-100 text-sm font-bold text-blue-800">{initials(item.name)}</span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold text-slate-800">{item.name}</span><span className="mt-1 block text-xs text-slate-500">{item.id} <i className="px-1 not-italic">•</i> {item.age} years <i className="px-1 not-italic">•</i> {item.gender}</span></span>{selected ? <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-600"><Check size={15} /> Selected</span> : <span className="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600">Select</span>}</button>; })}{!shownPatients.length && <p className="p-6 text-center text-sm text-slate-500">No patients match your search.</p>}</div></>}
-        {step === 2 && <Picker title="2. Select Doctor" description="Choose a doctor for this appointment"><div className="grid gap-3 sm:grid-cols-3">{doctors.map((item) => <button key={item} onClick={() => setDoctor(item)} className={`rounded-xl border p-4 text-left text-sm font-semibold ${doctor === item ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 hover:border-blue-300"}`}><Stethoscope className="mb-3" size={22} />{item}</button>)}</div></Picker>}
-        {step === 3 && <Picker title="3. Choose Date & Time" description="Select an available date and time slot"><div className="grid gap-4 sm:grid-cols-2"><input aria-label="Appointment date" type="date" value={date} onChange={(event) => setDate(event.target.value)} className="rounded-lg border border-slate-200 p-3 outline-blue-500" /><select aria-label="Appointment time" value={time} onChange={(event) => setTime(event.target.value)} className="rounded-lg border border-slate-200 p-3 outline-blue-500"><option value="">Choose a time</option><option>09:30 AM</option><option>11:00 AM</option><option>02:30 PM</option><option>04:00 PM</option></select></div></Picker>}
-        {step === 4 && <Picker title="4. Confirm & Book" description="Review the details before creating the appointment"><div className="rounded-xl bg-emerald-50 p-5 text-sm text-emerald-800">Everything looks good. Click Book Appointment to confirm this visit.</div></Picker>}
-      </div>
-      <PatientDetails patient={patient} onContinue={() => setStep(2)} />
-      <AppointmentSummary patient={patient} doctor={doctor} date={date} time={time} step={step} canProceed={canProceed} onNext={() => setStep((current) => Math.min(4, current + 1))} />
-    </div>
-  </section>;
+declare global {
+  interface Window {
+    Calendly?: {
+      initInlineWidget: (options: {
+        url: string;
+        parentElement: HTMLElement;
+      }) => void;
+    };
+  }
 }
 
-function Picker({ title, description, children }: { title: string; description: string; children: ReactNode }) { return <><h2 className="text-lg font-bold text-slate-900">{title}</h2><p className="mt-1 text-sm text-slate-500">{description}</p><div className="mt-6">{children}</div></>; }
+const CalendlyWidget = ({ eventLink }: { eventLink: string }) => {
+  const [isLoaded, setIsLoaded] = useState(Boolean(window.Calendly));
 
-function PatientDetails({ patient, onContinue }: { patient: Patient; onContinue: () => void }) { return <aside className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><h2 className="font-bold text-slate-900">Patient Details</h2><div className="mt-5 flex items-center gap-3"><span className="grid h-14 w-14 place-items-center rounded-full bg-blue-100 text-lg font-bold text-blue-800">{initials(patient.name)}</span><div><p className="font-bold text-slate-800">{patient.name}</p><p className="mt-1 text-xs text-slate-500">{patient.id} <i className="px-1 not-italic">•</i> {patient.age} years <i className="px-1 not-italic">•</i> {patient.gender}</p></div></div><div className="mt-6 space-y-2 text-sm text-slate-600"><p className="font-semibold text-slate-700">Contact</p><p className="flex gap-2"><Phone size={16} /> {patient.phone}</p><p className="flex gap-2"><MapPin size={16} /> {patient.location}</p></div><button onClick={onContinue} className="mt-7 w-full rounded-lg bg-blue-50 p-4 text-left text-sm text-blue-700 hover:bg-blue-100"><span className="flex items-center gap-2 font-semibold"><Info size={18} /> Ready to continue?</span><span className="mt-2 block pl-6 text-xs text-blue-600">Patient selected. Now choose a doctor for the appointment.</span></button></aside>; }
+  useEffect(() => {
+    if (!isLoaded || !window.Calendly) return;
+    const container = document.getElementById("doctor-calendly-widget");
+    if (!container) return;
+    container.replaceChildren();
+    window.Calendly.initInlineWidget({
+      url: eventLink,
+      parentElement: container,
+    });
+  }, [eventLink, isLoaded]);
 
+  return (
+    <div
+      id="doctor-calendly-widget" 
+      className="h-full w-full overflow-hidden rounded-xl bg-white"
+    >
+    </div>
+  );
+};
 
-function AppointmentSummary({ patient, doctor, date, time, step, canProceed, onNext }: { patient: Patient; doctor: string; date: string; time: string; step: number; canProceed: boolean; onNext: () => void }) { const rows = [{ icon: UserRound, label: "Patient", value: patient.name, note: patient.id }, { icon: Stethoscope, label: "Doctor", value: doctor || "Not selected" }, { icon: CalendarDays, label: "Date", value: date || "Not selected" }, { icon: Clock3, label: "Time", value: time || "Not selected" }]; return <aside className="flex min-h-[520px] flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><h2 className="text-lg font-bold text-slate-900">Appointment Summary</h2><div className="mt-4 divide-y divide-slate-200">{rows.map(({ icon: Icon, label, value, note }) => <div key={label} className="flex items-center gap-3 py-4"><span className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-slate-700"><Icon size={21} /></span><span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-slate-700">{label}</span><span className={`block truncate text-sm ${value === "Not selected" ? "text-slate-500" : "font-semibold text-slate-800"}`}>{value}</span>{note && <span className="block text-xs text-slate-500">{note}</span>}</span>{label !== "Patient" && <ChevronRight size={18} className="text-slate-400" />}</div>)}</div><button disabled={!canProceed} onClick={onNext} className="mt-auto flex h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 text-sm font-semibold text-white enabled:hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-500">{step === 4 ? "Book Appointment" : "Next"}<ChevronRight size={18} /></button></aside>; }
+const ReceptionAppointmentBooking = () => {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [eventLink, setEventLink] = useState("");
+  const [isBookingLoading, setIsBookingLoading] = useState(false);
+  const token = localStorage.getItem("token");
+
+  const fetchDoctors = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const [doctorsResponse, usersResponse] = await Promise.all([
+        axios.get(`${BACKEND_URL}/doctor`, {
+          headers: { authorization: token },
+        }),
+        axios.get(`${BACKEND_URL}/users`, {
+          headers: { authorization: token },
+        }),
+      ]);
+      const doctorRecords: Doctor[] = doctorsResponse.data?.doctor ?? [];
+      const usersById = new Map<number, Doctor>(
+        (usersResponse.data?.user ?? []).map((user: Doctor) => [
+          Number(user.user_id),
+          user,
+        ]),
+      );
+      setDoctors(
+        doctorRecords.map((doctor) => ({
+          ...doctor,
+          username: usersById.get(Number(doctor.user_id))?.username ?? "Doctor",
+          email: usersById.get(Number(doctor.user_id))?.email,
+        })),
+      );
+    } catch (requestError: unknown) {
+      setError(
+        axios.isAxiosError(requestError)
+          ? (requestError.response?.data?.msg ??
+              "Unable to load available doctors. Please try again.")
+          : "Unable to load available doctors. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    // The async request updates state only after its response resolves.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchDoctors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openBooking = async (doctor: Doctor) => {
+    setSelectedDoctor(doctor);
+    setEventLink(doctor.calendly_event_type_uri ?? "");
+    setIsBookingLoading(true);
+    setError("");
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/doctor/${doctor.user_id}`,
+        { headers: { authorization: token } },
+      );
+      const doctorEventLink =
+        response.data?.data?.[0]?.calendly_event_type_uri ?? doctor.calendly_event_type_uri;
+      if (!doctorEventLink)
+        throw new Error("This doctor does not have a booking link.");
+      setEventLink(doctorEventLink);
+    } catch (requestError: unknown) {
+      setSelectedDoctor(null);
+      setError(
+        axios.isAxiosError(requestError)
+          ? (requestError.response?.data?.msg ??
+              requestError.message ??
+              "Unable to open the booking calendar.")
+          : requestError instanceof Error
+            ? requestError.message
+            : "Unable to open the booking calendar.",
+      );
+    } finally {
+      setIsBookingLoading(false);
+    }
+  };
+
+  const filteredDoctors = doctors.filter((doctor) =>
+    [doctor.username, doctor.specialization, doctor.specialty, doctor.email]
+      .filter(Boolean)
+      .some((value) => value?.toLowerCase().includes(searchTerm.toLowerCase())),
+  );
+
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">
+      <div className="mb-8 rounded-2xl bg-gradient-to-r from-blue-700 to-cyan-600 px-6 py-8 text-white shadow-lg sm:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-blue-100">
+              <CalendarDays size={18} /> APPOINTMENTS
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Book a doctor consultation
+            </h1>
+            <p className="mt-2 max-w-2xl text-blue-100">
+              Select a doctor to view their live availability and reserve a
+              time.
+            </p>
+          </div>
+          <div className="hidden rounded-2xl bg-white/15 p-4 sm:block">
+            <Stethoscope size={36} />
+          </div>
+        </div>
+      </div>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Available doctors
+          </h2>
+          <p className="text-sm text-slate-500">
+            Choose the specialist best suited to the patient.
+          </p>
+        </div>
+        <label className="relative w-full sm:w-80">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            size={19}
+          />
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search name or specialty"
+            className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </label>
+      </div>
+      {error && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((item) => (
+            <div
+              key={item}
+              className="h-64 animate-pulse rounded-2xl bg-slate-200"
+            />
+          ))}
+        </div>
+      ) : filteredDoctors.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500">
+          No doctors match your search.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredDoctors.map((doctor) => (
+            <article
+              key={doctor.user_id}
+              className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="mb-5 flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                  <Stethoscope size={24} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="truncate text-lg font-bold text-slate-900">
+                    Dr. {doctor.username}
+                  </h3>
+                  <p className="mt-1 text-sm font-medium text-blue-600">
+                    {doctor.specialization ||
+                      doctor.specialty ||
+                      "General Medicine"}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2 text-sm text-slate-600">
+                {doctor.experience !== undefined && (
+                  <p className="flex items-center gap-2">
+                    <Clock3 size={16} className="text-slate-400" />
+                    {doctor.experience} years of experience
+                  </p>
+                )}
+                {doctor.consultation_fee !== undefined && (
+                  <p className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-slate-400" />
+                    Consultation fee: ${doctor.consultation_fee}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => openBooking(doctor)}
+                className="mt-6 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
+              >
+                View availability
+              </button>
+            </article>
+          ))}
+        </div>
+      )}
+      {selectedDoctor && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 p-3 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Book an appointment"
+        >
+          <div className="mx-auto flex min-h-full max-w-5xl items-center justify-center">
+            <div className="w-full h-full overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-7">
+                <div>
+                  <p className="text-xs font-bold tracking-wide text-blue-600">
+                    BOOK A CONSULTATION
+                  </p>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Dr. {selectedDoctor.username}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedDoctor(null);
+                    setEventLink("");
+                  }}
+                  className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                  aria-label="Close calendar"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+              <div className="h-[650px] flex items-center justify-center bg-slate-50 p-2 sm:p-4">
+                {isBookingLoading ? (
+                  <div className="flex items-center justify-center text-sm text-slate-500">
+                    Getting availability…
+                  </div>
+                ) : (
+                  eventLink && (
+                    <CalendlyWidget key={eventLink} eventLink={eventLink} />
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default ReceptionAppointmentBooking;
