@@ -27,6 +27,8 @@ const DoctorAddModel = ({
   const [email, setEmail] = useState("");
   const [experience, setExperience] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
+  const [calendlyUserUri, setCalendlyUserUri] = useState("");
+  const [calendlyEventUri, setCalendlyEventUri] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,9 +50,10 @@ const DoctorAddModel = ({
           ? String(selectedDoctor.experience)
           : ""
       );
+      setCalendlyUserUri(selectedDoctor.calendlyUserUri || "")
+      setCalendlyEventUri(selectedDoctor.calendlyEventUri || "")
       setPassword(selectedDoctor.password || "");
       setError("");
-
       if (
         selectedDoctor.user_id &&
         (!selectedDoctor.license_no ||
@@ -118,7 +121,9 @@ const DoctorAddModel = ({
             role: "doctor",
             email: email.trim(),
             status: selectedDoctor.status || "active",
-            specialization: specialization.trim()
+            specialization: specialization.trim(),
+            calendly_event_type_uri:calendlyEventUri,
+            calendly_user_uri:calendlyUserUri
           },
           {
             headers: {
@@ -272,6 +277,31 @@ const DoctorAddModel = ({
               placeholder="Enter consultation fee"
               value={consultationFee}
               onChange={(e) => setConsultationFee(e.target.value)}
+              className="w-full bg-[#f0f2f5] border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition"
+            />
+          </div>
+          {/* //consultsation url */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Calendly User URL
+            </label>
+            <input
+              type="text"
+              placeholder="Enter consultation url"
+              value={calendlyUserUri}
+              onChange={(e) => setCalendlyUserUri(e.target.value)}
+              className="w-full bg-[#f0f2f5] border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+               Calendly Event Url
+            </label>
+            <input
+              type="text"
+              placeholder="Enter Calendly Event Url"
+              value={calendlyEventUri}
+              onChange={(e) => setCalendlyEventUri(e.target.value)}
               className="w-full bg-[#f0f2f5] border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition"
             />
           </div>

@@ -1,54 +1,514 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { CalendarDays, Check, ChevronRight, Clock3, Info, MapPin, Phone, Search, Stethoscope, UserPlus, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  CalendarDays,
+  Check,
+  Clock3,
+  Loader2,
+  Search,
+  Stethoscope,
+  UserPlus,
+  UserRound,
+  X,
+} from "lucide-react";
 import AppointmentHeader from "./AppointmentHeader";
+import { BACKEND_URL } from "../config";
 
-type Patient = { id: string; name: string; age: number; gender: "Male" | "Female"; phone: string; location: string };
-
-const patients: Patient[] = [
-  { id: "P1024", name: "Rahul Sharma", age: 32, gender: "Male", phone: "+91 98765 43210", location: "Jaipur, Rajasthan" },
-  { id: "P1025", name: "Priya Singh", age: 28, gender: "Female", phone: "+91 99876 12034", location: "Jaipur, Rajasthan" },
-  { id: "P1026", name: "Arjun Mehta", age: 45, gender: "Male", phone: "+91 98111 22334", location: "Jaipur, Rajasthan" },
-  { id: "P1027", name: "Sneha Kapoor", age: 23, gender: "Female", phone: "+91 98765 87878", location: "Jaipur, Rajasthan" },
-  { id: "P1028", name: "Vikash Kumar", age: 50, gender: "Male", phone: "+91 99000 11779", location: "Jaipur, Rajasthan" },
-];
-const doctors = ["Dr. Ananya Verma", "Dr. Rohan Gupta", "Dr. Meera Iyer"];
-const steps = ["Select Patient", "Select Doctor", "Choose Date & Time", "Confirm & Book"];
-const initials = (name: string) => name.split(" ").map((word) => word[0]).slice(-2).join("");
+type Patient = {
+  patient_id: number;
+  patient_name: string;
+  phone: string;
+  email?: string;
+  gender: string;
+  dob: string;
+  address: string;
+};
+type Doctor = { user_id: number; username: string; specialization?: string };
+type Slot = { startTime: string };
+const headers = () => ({ authorization: localStorage.getItem("token") || "" });
+const dateLabel = (value: string) =>
+  new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+const timeLabel = (value: string) =>
+  new Intl.DateTimeFormat(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "UTC",
+  }).format(new Date(value));
 
 export default function ReceptionAppointmentBooking() {
   const [query, setQuery] = useState("");
-  const [patient, setPatient] = useState<Patient>(patients[0]);
-  const [doctor, setDoctor] = useState("");
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [step, setStep] = useState(1);
-  const shownPatients = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    return term ? patients.filter((item) => `${item.name} ${item.id} ${item.phone}`.toLowerCase().includes(term)) : patients;
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [startTime, setStartTime] = useState("");
+  const [reason, setReason] = useState("");
+  const [newPatient, setNewPatient] = useState(false);
+  const [loadingPatients, setLoadingPatients] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [booking, setBooking] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState<any>(null);
+
+  useEffect(() => {
+    void loadDoctors();
+    void loadPatients("");
+  }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadPatients(query), 250);
+    return () => window.clearTimeout(timer);
   }, [query]);
-  const canProceed = Boolean(patient && (step === 1 || doctor) && (step < 3 || date && time));
-
-  return <section className="mx-auto max-w-[1400px] space-y-5">
-    <AppointmentHeader />
-    <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><ol className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-3">
-      {steps.map((label, index) => { const number = index + 1; const active = number === step; const complete = number < step; return <li key={label} className="relative flex items-center gap-3 md:flex-col md:items-start">{index > 0 && <span className="absolute -left-[52%] top-5 hidden h-px w-[55%] bg-blue-200 md:block" />}<span className={`z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold ${active || complete ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "bg-slate-100 text-slate-600 ring-1 ring-slate-200"}`}>{complete ? <Check size={16} /> : number}</span><span className={`text-sm font-semibold ${active ? "text-blue-700" : "text-slate-500"}`}>{label}</span></li>; })}
-    </ol></div>
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.75fr)_minmax(280px,.78fr)_minmax(270px,.75fr)]">
-      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-        {step === 1 && <><h2 className="text-lg font-bold text-slate-900">1. Select Patient</h2><p className="mt-1 text-sm text-slate-500">Search for an existing patient or register a new one</p><div className="mt-5 flex flex-col gap-3 sm:flex-row"><label className="flex h-12 flex-1 items-center gap-3 rounded-lg border border-blue-100 px-3 text-slate-500 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 outline-none placeholder:text-slate-400" placeholder="Search by name, patient ID, or phone number..." /></label><button type="button" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-blue-500 px-4 text-sm font-semibold text-blue-600 hover:bg-blue-50"><UserPlus size={17} /> Register New Patient</button></div><h3 className="mt-5 text-sm font-bold text-slate-800">Recent Patients</h3><div className="mt-3 overflow-hidden rounded-xl border border-slate-100">{shownPatients.map((item) => { const selected = patient.id === item.id; return <button type="button" onClick={() => { setPatient(item); setStep(1); }} key={item.id} className={`flex w-full items-center gap-3 border-b border-slate-100 p-3 text-left last:border-0 hover:bg-blue-50 ${selected ? "bg-blue-50" : "bg-white"}`}><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-100 text-sm font-bold text-blue-800">{initials(item.name)}</span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold text-slate-800">{item.name}</span><span className="mt-1 block text-xs text-slate-500">{item.id} <i className="px-1 not-italic">•</i> {item.age} years <i className="px-1 not-italic">•</i> {item.gender}</span></span>{selected ? <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-600"><Check size={15} /> Selected</span> : <span className="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600">Select</span>}</button>; })}{!shownPatients.length && <p className="p-6 text-center text-sm text-slate-500">No patients match your search.</p>}</div></>}
-        {step === 2 && <Picker title="2. Select Doctor" description="Choose a doctor for this appointment"><div className="grid gap-3 sm:grid-cols-3">{doctors.map((item) => <button key={item} onClick={() => setDoctor(item)} className={`rounded-xl border p-4 text-left text-sm font-semibold ${doctor === item ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 hover:border-blue-300"}`}><Stethoscope className="mb-3" size={22} />{item}</button>)}</div></Picker>}
-        {step === 3 && <Picker title="3. Choose Date & Time" description="Select an available date and time slot"><div className="grid gap-4 sm:grid-cols-2"><input aria-label="Appointment date" type="date" value={date} onChange={(event) => setDate(event.target.value)} className="rounded-lg border border-slate-200 p-3 outline-blue-500" /><select aria-label="Appointment time" value={time} onChange={(event) => setTime(event.target.value)} className="rounded-lg border border-slate-200 p-3 outline-blue-500"><option value="">Choose a time</option><option>09:30 AM</option><option>11:00 AM</option><option>02:30 PM</option><option>04:00 PM</option></select></div></Picker>}
-        {step === 4 && <Picker title="4. Confirm & Book" description="Review the details before creating the appointment"><div className="rounded-xl bg-emerald-50 p-5 text-sm text-emerald-800">Everything looks good. Click Book Appointment to confirm this visit.</div></Picker>}
+  useEffect(() => {
+    if (!doctor || !date) {
+      setSlots([]);
+      setStartTime("");
+      return;
+    }
+    void loadSlots(doctor.user_id, date);
+  }, [doctor, date]);
+  async function loadPatients(search: string) {
+    setLoadingPatients(true);
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/patients`, {
+        params: search ? { search } : undefined,
+        headers: headers(),
+      });
+      setPatients(data.patients || data.users || []);
+    } catch {
+      setError("Unable to search patients.");
+    } finally {
+      setLoadingPatients(false);
+    }
+  }
+  async function loadDoctors() {
+    try {
+      const [docs, users] = await Promise.all([
+        axios.get(`${BACKEND_URL}/doctors`, { headers: headers() }),
+        axios.get(`${BACKEND_URL}/users`, { headers: headers() }),
+      ]);
+      const names = new Map(
+        (users.data.user || users.data.users || users.data.data || []).map(
+          (user: any) => [Number(user.user_id), user.username],
+        ),
+      );
+      setDoctors(
+        (docs.data.doctor || []).map((item: any) => ({
+          ...item,
+          user_id: Number(item.user_id),
+          username:
+            names.get(Number(item.user_id)) || `Doctor #${item.user_id}`,
+        })),
+      );
+    } catch {
+      setError("Unable to load doctors.");
+    }
+  }
+  async function loadSlots(id: number, selectedDate: string) {
+    setLoadingSlots(true);
+    setError("");
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/doctors/${id}/availability`,
+        { params: { date: selectedDate }, headers: headers() },
+      );
+      setSlots(data.slots || []);
+    } catch (err: any) {
+      setSlots([]);
+      setError(
+        err.response?.data?.message || "Unable to load doctor's availability.",
+      );
+    } finally {
+      setLoadingSlots(false);
+    }
+  }
+  async function book() {
+    if (!patient || !doctor || !startTime) return;
+    setBooking(true);
+    setError("");
+    try {
+      const { data } = await axios.post(
+        `${BACKEND_URL}/appointments/calendly`,
+        {
+          patientId: patient.patient_id,
+          doctorId: doctor.user_id,
+          startTime,
+          reason,
+          appointmentType: "consultation",
+        },
+        { headers: headers() },
+      );
+      setSuccess(data.appointment);
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || "Appointment could not be booked.",
+      );
+    } finally {
+      setBooking(false);
+    }
+  }
+  function reset() {
+    setPatient(null);
+    setDoctor(null);
+    setDate("");
+    setSlots([]);
+    setStartTime("");
+    setReason("");
+    setSuccess(null);
+    setError("");
+  }
+  if (success)
+    return (
+      <Success
+        appointment={success}
+        patient={patient}
+        doctor={doctor}
+        onReset={reset}
+      />
+    );
+  const today = new Date().toISOString().slice(0, 10);
+  return (
+    <section className="mx-auto max-w-[1400px] space-y-5">
+      <AppointmentHeader />
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(270px,.75fr)]">
+        <main className="space-y-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">
+              Book Appointment
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Select a patient, doctor, and an available Calendly time slot.
+            </p>
+          </div>
+          <section className="border-t pt-5">
+            <div className="flex justify-between">
+              <h3 className="font-bold">Patient</h3>
+              <button
+                onClick={() => setNewPatient(true)}
+                className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600"
+              >
+                <UserPlus size={16} /> New Patient
+              </button>
+            </div>
+            <label className="mt-3 flex h-11 items-center gap-3 rounded-lg border px-3 text-slate-500">
+              <Search size={18} />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="min-w-0 flex-1 outline-none"
+                placeholder="Search by name, patient ID, or phone"
+              />
+            </label>
+            <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border">
+              {loadingPatients && (
+                <p className="p-3 text-sm text-slate-500">
+                  Searching patients…
+                </p>
+              )}
+              {!loadingPatients &&
+                patients.map((item) => (
+                  <button
+                    key={item.patient_id}
+                    onClick={() => setPatient(item)}
+                    className={`flex w-full items-center justify-between border-b p-3 text-left last:border-0 hover:bg-blue-50 ${patient?.patient_id === item.patient_id ? "bg-blue-50" : ""}`}
+                  >
+                    <span>
+                      <b className="block text-sm">{item.patient_name}</b>
+                      <span className="text-xs text-slate-500">
+                        P{item.patient_id} · {item.phone}
+                      </span>
+                    </span>
+                    {patient?.patient_id === item.patient_id && (
+                      <Check className="text-blue-600" size={18} />
+                    )}
+                  </button>
+                ))}
+              {!loadingPatients && !patients.length && (
+                <p className="p-3 text-sm text-slate-500">
+                  No patients found. Create one without leaving this page.
+                </p>
+              )}
+            </div>
+          </section>
+          <section className="border-t pt-5">
+            <h3 className="font-bold">Doctor</h3>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {doctors.map((item) => (
+                <button
+                  key={item.user_id}
+                  onClick={() => setDoctor(item)}
+                  className={`rounded-lg border p-3 text-left text-sm ${doctor?.user_id === item.user_id ? "border-blue-500 bg-blue-50 text-blue-700" : "hover:border-blue-300"}`}
+                >
+                  <Stethoscope className="mb-1" size={18} />
+                  <b className="block">Dr. {item.username}</b>
+                  <span className="text-xs">
+                    {item.specialization || "General"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="border-t pt-5">
+            <h3 className="font-bold">Date & available slots</h3>
+            <input
+              min={today}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="mt-3 rounded-lg border p-3 outline-blue-500"
+            />
+            {loadingSlots && (
+              <p className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+                <Loader2 size={16} className="animate-spin" /> Loading
+                availability…
+              </p>
+            )}
+            {!loadingSlots && date && doctor && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {slots.map((slot) => (
+                  <button
+                    key={slot.startTime}
+                    onClick={() => setStartTime(slot.startTime)}
+                    className={`rounded-lg border px-3 py-2 text-sm font-semibold ${startTime === slot.startTime ? "border-blue-600 bg-blue-600 text-white" : "border-blue-200 text-blue-700"}`}
+                  >
+                    {timeLabel(slot.startTime)}
+                  </button>
+                ))}
+                {!slots.length && !error && (
+                  <p className="text-sm text-slate-500">
+                    No available slots for this date.
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
+          <section className="border-t pt-5">
+            <label className="block font-bold">
+              Reason for visit
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                maxLength={1000}
+                className="mt-2 min-h-24 w-full rounded-lg border p-3 text-sm font-normal outline-blue-500"
+                placeholder="Optional reason for visit"
+              />
+            </label>
+          </section>
+        </main>
+        <aside className="flex min-h-96 flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+          <h2 className="text-lg font-bold">Appointment Summary</h2>
+          <div className="mt-4 space-y-4">
+            <Summary
+              icon={UserRound}
+              label="Patient"
+              value={patient?.patient_name || "Not selected"}
+            />
+            <Summary
+              icon={Stethoscope}
+              label="Doctor"
+              value={doctor ? `Dr. ${doctor.username}` : "Not selected"}
+            />
+            <Summary
+              icon={CalendarDays}
+              label="Date"
+              value={date ? dateLabel(date) : "Not selected"}
+            />
+            <Summary
+              icon={Clock3}
+              label="Time"
+              value={startTime ? timeLabel(startTime) : "Not selected"}
+            />
+          </div>
+          {error && (
+            <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+          <button
+            disabled={!patient || !doctor || !startTime || booking}
+            onClick={() => void book()}
+            className="mt-auto flex h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 text-sm font-semibold text-white disabled:bg-slate-200"
+          >
+            {booking && <Loader2 size={17} className="animate-spin" />}
+            {booking ? "Booking…" : "Book Appointment"}
+          </button>
+        </aside>
       </div>
-      <PatientDetails patient={patient} onContinue={() => setStep(2)} />
-      <AppointmentSummary patient={patient} doctor={doctor} date={date} time={time} step={step} canProceed={canProceed} onNext={() => setStep((current) => Math.min(4, current + 1))} />
-    </div>
-  </section>;
+      {newPatient && (
+        <PatientModal
+          onClose={() => setNewPatient(false)}
+          onCreated={(created) => {
+            setPatient(created);
+            setPatients((current) => [
+              created,
+              ...current.filter(
+                (item) => item.patient_id !== created.patient_id,
+              ),
+            ]);
+            setNewPatient(false);
+          }}
+        />
+      )}
+    </section>
+  );
 }
-
-function Picker({ title, description, children }: { title: string; description: string; children: ReactNode }) { return <><h2 className="text-lg font-bold text-slate-900">{title}</h2><p className="mt-1 text-sm text-slate-500">{description}</p><div className="mt-6">{children}</div></>; }
-
-function PatientDetails({ patient, onContinue }: { patient: Patient; onContinue: () => void }) { return <aside className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><h2 className="font-bold text-slate-900">Patient Details</h2><div className="mt-5 flex items-center gap-3"><span className="grid h-14 w-14 place-items-center rounded-full bg-blue-100 text-lg font-bold text-blue-800">{initials(patient.name)}</span><div><p className="font-bold text-slate-800">{patient.name}</p><p className="mt-1 text-xs text-slate-500">{patient.id} <i className="px-1 not-italic">•</i> {patient.age} years <i className="px-1 not-italic">•</i> {patient.gender}</p></div></div><div className="mt-6 space-y-2 text-sm text-slate-600"><p className="font-semibold text-slate-700">Contact</p><p className="flex gap-2"><Phone size={16} /> {patient.phone}</p><p className="flex gap-2"><MapPin size={16} /> {patient.location}</p></div><button onClick={onContinue} className="mt-7 w-full rounded-lg bg-blue-50 p-4 text-left text-sm text-blue-700 hover:bg-blue-100"><span className="flex items-center gap-2 font-semibold"><Info size={18} /> Ready to continue?</span><span className="mt-2 block pl-6 text-xs text-blue-600">Patient selected. Now choose a doctor for the appointment.</span></button></aside>; }
-
-
-function AppointmentSummary({ patient, doctor, date, time, step, canProceed, onNext }: { patient: Patient; doctor: string; date: string; time: string; step: number; canProceed: boolean; onNext: () => void }) { const rows = [{ icon: UserRound, label: "Patient", value: patient.name, note: patient.id }, { icon: Stethoscope, label: "Doctor", value: doctor || "Not selected" }, { icon: CalendarDays, label: "Date", value: date || "Not selected" }, { icon: Clock3, label: "Time", value: time || "Not selected" }]; return <aside className="flex min-h-[520px] flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100"><h2 className="text-lg font-bold text-slate-900">Appointment Summary</h2><div className="mt-4 divide-y divide-slate-200">{rows.map(({ icon: Icon, label, value, note }) => <div key={label} className="flex items-center gap-3 py-4"><span className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-slate-700"><Icon size={21} /></span><span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-slate-700">{label}</span><span className={`block truncate text-sm ${value === "Not selected" ? "text-slate-500" : "font-semibold text-slate-800"}`}>{value}</span>{note && <span className="block text-xs text-slate-500">{note}</span>}</span>{label !== "Patient" && <ChevronRight size={18} className="text-slate-400" />}</div>)}</div><button disabled={!canProceed} onClick={onNext} className="mt-auto flex h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 text-sm font-semibold text-white enabled:hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-500">{step === 4 ? "Book Appointment" : "Next"}<ChevronRight size={18} /></button></aside>; }
+function Summary({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: any;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex gap-3">
+      <span className="grid h-10 w-10 place-items-center rounded-full bg-slate-100">
+        <Icon size={19} />
+      </span>
+      <span>
+        <span className="block text-xs font-semibold text-slate-500">
+          {label}
+        </span>
+        <b className="block text-sm">{value}</b>
+      </span>
+    </div>
+  );
+}
+function PatientModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (patient: Patient) => void;
+}) {
+  const [form, setForm] = useState({
+    patient_name: "",
+    phone: "",
+    email: "",
+    dob: "",
+    gender: "",
+    address: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const fields = [
+    ["patient_name", "Name", "text"],
+    ["phone", "Phone", "tel"],
+    ["email", "Email", "email"],
+    ["dob", "Date of birth", "date"],
+    ["gender", "Gender", "text"],
+    ["address", "Address", "text"],
+  ] as const;
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/patients`, form, {
+        headers: headers(),
+      });
+      onCreated(data.patient);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Patient could not be created.");
+    } finally {
+      setSaving(false);
+    }
+  }
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+      <form
+        onSubmit={(e) => void submit(e)}
+        className="relative w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4"
+        >
+          <X size={20} />
+        </button>
+        <h2 className="text-xl font-bold">Create New Patient</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {fields.map(([key, label, type]) => (
+            <label
+              key={key}
+              className={key === "address" ? "sm:col-span-2" : ""}
+            >
+              <span className="mb-1 block text-sm font-medium">{label}</span>
+              <input
+                required
+                type={type}
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                className="w-full rounded-lg border p-2.5 outline-blue-500"
+              />
+            </label>
+          ))}
+        </div>
+        {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+        <button
+          disabled={saving}
+          className="mt-5 w-full rounded-lg bg-blue-600 p-3 font-semibold text-white disabled:bg-slate-300"
+        >
+          {saving ? "Creating…" : "Create & Select Patient"}
+        </button>
+      </form>
+    </div>
+  );
+}
+function Success({
+  appointment,
+  patient,
+  doctor,
+  onReset,
+}: {
+  appointment: any;
+  patient: Patient | null;
+  doctor: Doctor | null;
+  onReset: () => void;
+}) {
+  return (
+    <section className="mx-auto max-w-2xl">
+      <AppointmentHeader />
+      <div className="mt-5 rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-100">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+          <Check size={30} />
+        </span>
+        <h1 className="mt-4 text-2xl font-bold">
+          Appointment Booked Successfully
+        </h1>
+        <div className="mx-auto mt-5 max-w-sm space-y-2 rounded-lg bg-slate-50 p-4 text-left text-sm">
+          <p>
+            <b>Appointment ID:</b> A-{appointment.id}
+          </p>
+          <p>
+            <b>Patient:</b> {patient?.patient_name}
+          </p>
+          <p>
+            <b>Doctor:</b> Dr. {doctor?.username}
+          </p>
+          <p>
+            <b>Date:</b> {dateLabel(appointment.appointment_datetime)}
+          </p>
+          <p>
+            <b>Time:</b> {timeLabel(appointment.appointment_datetime)}
+          </p>
+          <p>
+            <b>Status:</b> Scheduled
+          </p>
+        </div>
+        <button
+          onClick={onReset}
+          className="mt-6 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white"
+        >
+          Book Another Appointment
+        </button>
+      </div>
+    </section>
+  );
+} 

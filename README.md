@@ -190,12 +190,11 @@ The frontend API base URL is configured in `frontend/src/config.ts`. Change it w
 
 ### 3. Enable Calendly and Microsoft Teams for reception
 
-1. In Calendly, connect the hospital’s Microsoft Teams account and create an event type for patient consultations. Set its location to **Microsoft Teams**.
-2. Copy `frontend/.env.example` to `frontend/.env` and replace the example value with that event type’s public Calendly URL.
-3. Restart `npm run dev`.
-4. Reception users can open **Appointments** in their dashboard and schedule on the embedded Calendly page. Calendly sends confirmation messages and includes the Teams meeting link after the booking is made.
-
-`VITE_CALENDLY_EVENT_URL` is intentionally only an event page URL. Do not put a Calendly personal access token, OAuth secret, or Microsoft credentials in a `VITE_` environment variable because Vite exposes it to the browser.
+1. Apply [`backend/migrations/20260909_calendly_appointments.sql`](backend/migrations/20260909_calendly_appointments.sql) to PostgreSQL.
+2. Copy `backend/.env.example` to `backend/.env`, retaining the existing database and JWT settings, and set the Calendly access token, webhook signing key, and hospital timezone. The token needs `event_types:read`, `scheduled_events:read`, and `scheduled_events:write`; webhook administration also needs `webhooks:write`.
+3. In Calendly, create an event type for each schedulable doctor and connect any desired meeting location (for example Microsoft Teams). Store its canonical `https://api.calendly.com/event_types/...` URI in `doctor.calendly_event_type_uri`. Optionally store the owning Calendly user URI in `doctor.calendly_user_uri`.
+4. Create a Calendly webhook subscription for `invitee.created` and `invitee.canceled`, pointing to `https://YOUR-HOST/api/v1/webhooks/calendly` and using the same signing key as `CALENDLY_WEBHOOK_SIGNING_KEY`.
+5. Restart the API. Reception users can then book directly from **Appointments**; no Calendly token or secret is sent to the browser.
 
 ### 4. Build and lint the frontend
 

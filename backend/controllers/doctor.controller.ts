@@ -14,7 +14,9 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
         username,
         password,
         role = "doctor",
-        email
+        email,
+        calendly_user_uri,
+        calendly_event_type_uri
     } = req.body;
 
     console.log("Add doctor request payload:", req.body);
@@ -88,7 +90,9 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
                 specialization,
                 license_no,
                 experience: parsedExperience,
-                consultation_fee: parsedFee
+                consultation_fee: parsedFee,
+                calendly_user_uri,
+                calendly_event_type_uri
             },
             client
         );
@@ -194,10 +198,12 @@ export const updateDoctor = async(req:Request,res:Response)=>{
     const role = req.body.role;
     const email = req.body.email;
     const status = req.body.status;
+    const calendly_user_uri = req.body.calendly_user_uri;
+    const calendly_event_type_uri = req.body.calendly_event_type_uri;
     
     try{
         const data = await updateUserData(username, email, status, role, user_id);
-        const doc = await updateDoctorDetails({specialization , license_no , experience , consultation_fee, user_id});
+        const doc = await updateDoctorDetails({specialization , license_no , experience , consultation_fee, user_id, calendly_user_uri, calendly_event_type_uri});
         res.json({
             msg:"User updated successfully",
             data,

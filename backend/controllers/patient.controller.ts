@@ -1,14 +1,18 @@
 import type { Request, Response } from "express";
-import { addPatient, getAllPatient, getOnePatientModel , deletePatient as deletePatientModel, updatePatient as updatePatientModel } from "../models/patient.model.ts";
+import { addPatient, getAllPatient, getOnePatientModel, getPatientByPhone, searchPatients, deletePatient as deletePatientModel, updatePatient as updatePatientModel } from "../models/patient.model.ts";
 
 export const addPatients = async (req: Request, res: Response) => {
     try {
-        const { patient_name, phone, address, gender, dob } = req.body;
-        await addPatient({ patient_name, address, phone, gender, dob });
-        res.status(200).json({
-            "message": "patient added successfully",
-        });
-    } catch (err) {
+        const { patient_name, phone, address, gender, dob, email } = req.body;
+        if (![patient_name, phone, address, gender, dob, email].every((value) => typeof value === "string" && value.trim())) {
+            return res.status(400).json({ message: "Patient name, phone, email, address, gender, and date of birth are required" });
+        }
+        const duplicate = await getPatientByPhone(phone.trim());
+        if (duplicate) return res.status(409).json({ message: "A patient with this phone number already exists", patient: duplicate });
+        const patient = await addPatient({ patient_name: patient_name.trim(), address: address.trim(), phone: phone.trim(), gender, dob, email: email.trim() });
+        res.status(201).json({ message: "patient added successfully", patient });
+    } catch (err: any) {
+        if (err?.code === "23505") return res.status(409).json({ message: "A patient with this phone number already exists" });
         res.status(500).json({
             "message": "Error adding patient",
             error: err
@@ -18,7 +22,8 @@ export const addPatients = async (req: Request, res: Response) => {
 
 export const getPatient = async (req: Request, res: Response) => {
     try {
-        const users = await getAllPatient();
+        const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+        const users = search ? await searchPatients(search) : await getAllPatient();
         res.status(200).json({ users, patients: users });
     } catch (err) {
         res.status(500).json({
