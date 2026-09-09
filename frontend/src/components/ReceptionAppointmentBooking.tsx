@@ -34,10 +34,10 @@ declare global {
 }
 
 const CalendlyWidget = ({ eventLink }: { eventLink: string }) => {
-  const [isLoaded, setIsLoaded] = useState(Boolean(window.Calendly));
+  // const [isLoaded, setIsLoaded] = useState(Boolean(window.Calendly));
 
   useEffect(() => {
-    if (!isLoaded || !window.Calendly) return;
+    if (!window.Calendly) return;
     const container = document.getElementById("doctor-calendly-widget");
     if (!container) return;
     container.replaceChildren();
@@ -45,7 +45,7 @@ const CalendlyWidget = ({ eventLink }: { eventLink: string }) => {
       url: eventLink,
       parentElement: container,
     });
-  }, [eventLink, isLoaded]);
+  }, [eventLink]);
 
   return (
     <div
