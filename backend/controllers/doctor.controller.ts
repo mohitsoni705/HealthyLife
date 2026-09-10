@@ -5,8 +5,6 @@ import { addDoctorData, deleteDoctorDetails, existingDoctor, getDoctorData, getD
 import bcrypt from "bcrypt";
 import pool from "../config/db.ts";
 
-const DEFAULT_EVENT_LINK = "https://calendly.com/mohitsoni3820/30min";
-
 export const addDoctor = async (req: Request, res: Response): Promise<void> => {
     const {
         license_no,
@@ -16,7 +14,8 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
         username,
         password,
         role = "doctor",
-        email
+        email,
+        calendly_scheduling_url
     } = req.body;
 
     console.log("Add doctor request payload:", req.body);
@@ -90,7 +89,8 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
                 specialization,
                 license_no,
                 experience: parsedExperience,
-                consultation_fee: parsedFee
+                consultation_fee: parsedFee,
+                calendly_scheduling_url
             },
             client
         );
@@ -157,12 +157,8 @@ export const addDoctor = async (req: Request, res: Response): Promise<void> => {
 export const getDoctors = async(req:Request,res:Response)=>{
      try{
         const doctor = await getDoctorsData();
-        const doctorWithEventLink = doctor.map((item:any) => ({
-            ...item,
-            event_link: item.event_link || DEFAULT_EVENT_LINK
-        }));
         res.json({
-            doctor: doctorWithEventLink
+            doctor
         })
      }catch(err){
         const cause = err instanceof Error ? err.message : String(err);
@@ -200,10 +196,11 @@ export const updateDoctor = async(req:Request,res:Response)=>{
     const role = req.body.role;
     const email = req.body.email;
     const status = req.body.status;
+    const calendly_scheduling_url = req.body.calendly_scheduling_url;
     
     try{
         const data = await updateUserData(username, email, status, role, user_id);
-        const doc = await updateDoctorDetails({specialization , license_no , experience , consultation_fee, user_id});
+        const doc = await updateDoctorDetails({ specialization, license_no, experience, consultation_fee, user_id, calendly_scheduling_url });
         res.json({
             msg:"User updated successfully",
             data,
@@ -229,13 +226,9 @@ export const getOneDoctor = async(req:Request,res:Response)=>{
             return;
         }
         const data = await getDoctorData(doc_id);
-        const enrichedData = data.map((item:any) => ({
-            ...item,
-            event_link: item.event_link || DEFAULT_EVENT_LINK
-        }));
         res.json({
             msg:"Successfully got doctor data",
-            data: enrichedData
+            data
         })
     } catch(err) {
         const cause = err instanceof Error ? err.message : String(err);

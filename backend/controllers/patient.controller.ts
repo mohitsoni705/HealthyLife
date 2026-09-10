@@ -3,11 +3,13 @@ import { addPatient, getAllPatient, getOnePatientModel , deletePatient as delete
 
 export const addPatients = async (req: Request, res: Response) => {
     try {
-        const { patient_name, phone, address, gender, dob } = req.body;
-        await addPatient({ patient_name, address, phone, gender, dob });
-        res.status(200).json({
-            "message": "patient added successfully",
-        });
+        const { patient_name, phone, address, gender, dob, email } = req.body;
+        if (!patient_name || !phone || !address || !gender || !dob || !email) {
+            res.status(400).json({ message: "Patient name, email, phone, address, gender, and date of birth are required." });
+            return;
+        }
+        const [patient] = await addPatient({ patient_name, address, phone, gender, dob, email });
+        res.status(201).json({ message: "Patient added successfully", patient });
     } catch (err) {
         res.status(500).json({
             "message": "Error adding patient",

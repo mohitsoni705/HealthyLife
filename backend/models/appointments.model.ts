@@ -5,14 +5,15 @@ interface apppointmentProps{
     id?:number,
     patient_id:number,
     doctor_id:number,
-    appointment_datetime:string,
+    appointment_datetime:string | null,
     reason:string,
-    status:"scheduled"|"completed"|"cancelled",
+    status:"pending_calendly"|"scheduled"|"completed"|"cancelled",
+    created_by_user_id?: number,
 }
 
-export const insertAppointment=async({patient_id , doctor_id , appointment_datetime , reason , status}:apppointmentProps)=>{
-    const result = await pool.query(`insert into appointments(patient_id , doctor_id , appointment_datetime , reason , status) values ($1,$2, $3, $4 ,$5) RETURNING *`,[patient_id , doctor_id , appointment_datetime , reason , status]);
-    return result;
+export const insertAppointment=async({patient_id, doctor_id, appointment_datetime, reason, status, created_by_user_id}:apppointmentProps)=>{
+    const result = await pool.query(`insert into appointments (patient_id, doctor_id, appointment_datetime, reason, status , created_by_user_id) values ($1, $2, $3, $4 ,$5 , $6)  RETURNING *`, [patient_id, doctor_id, appointment_datetime, reason, status, created_by_user_id]);
+    return result.rows[0];
 }
 
 export const getAppoointments = async()=>{
@@ -24,7 +25,7 @@ export const getOneAppointmentsData = async(id:any)=>{
     return result.rows;
 }
 export const updateAppointmentStatus=async(status:string , id:number)=>{
-    const result = await pool.query(`UPDATE appointments SET status = $1 where id = $2 `,[status,id])
+    const result = await pool.query(`UPDATE appointments SET status = $1, updated_at = NOW() where id = $2 RETURNING *`,[status,id])
     return result.rows[0];
 }
 export const getDoctorScheduleData= async(id:any)=>{

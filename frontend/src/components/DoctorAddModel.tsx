@@ -27,6 +27,7 @@ const DoctorAddModel = ({
   const [email, setEmail] = useState("");
   const [experience, setExperience] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
+  const [calendlySchedulingUrl, setCalendlySchedulingUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +50,7 @@ const DoctorAddModel = ({
           : ""
       );
       setPassword(selectedDoctor.password || "");
+      setCalendlySchedulingUrl(selectedDoctor.calendly_scheduling_url || "");
       setError("");
 
       if (
@@ -84,6 +86,7 @@ const DoctorAddModel = ({
       setEmail("");
       setExperience("");
       setConsultationFee("");
+      setCalendlySchedulingUrl("");
       setError("");
     }
   }, [open, edit, selectedDoctor, token]);
@@ -118,7 +121,8 @@ const DoctorAddModel = ({
             role: "doctor",
             email: email.trim(),
             status: selectedDoctor.status || "active",
-            specialization: specialization.trim()
+            specialization: specialization.trim(),
+            calendly_scheduling_url: calendlySchedulingUrl.trim()
           },
           {
             headers: {
@@ -137,7 +141,8 @@ const DoctorAddModel = ({
             role: "doctor",
             email: email.trim(),
             password,
-            specialization: specialization.trim()
+            specialization: specialization.trim(),
+            calendly_scheduling_url: calendlySchedulingUrl.trim()
           },
           {
             headers: {
@@ -272,6 +277,19 @@ const DoctorAddModel = ({
               placeholder="Enter consultation fee"
               value={consultationFee}
               onChange={(e) => setConsultationFee(e.target.value)}
+              className="w-full bg-[#f0f2f5] border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Calendly Scheduling URL
+            </label>
+            <input
+              type="url"
+              placeholder="https://calendly.com/doctor/consultation"
+              value={calendlySchedulingUrl}
+              onChange={(e) => setCalendlySchedulingUrl(e.target.value)}
               className="w-full bg-[#f0f2f5] border border-gray-200 rounded-lg px-3.5 py-2.5 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 transition"
             />
           </div>

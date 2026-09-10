@@ -4,9 +4,7 @@ import UserAuthMiddleware from "../middlewares/auth.middleware.ts";
 
 const router = express.Router();
 router.post("/patients", UserAuthMiddleware, addPatients);
-router.post("/", UserAuthMiddleware, addPatients);
 router.get("/patients", UserAuthMiddleware, getPatient);
-router.get("/", UserAuthMiddleware, getPatient);
 router.get("/patient/:id", UserAuthMiddleware, getOnePatient);
 router.delete("/patient/:id", UserAuthMiddleware, deletePatient);
 router.put("/patient/:id", UserAuthMiddleware, updatePatient);

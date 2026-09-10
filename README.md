@@ -63,6 +63,10 @@ Browser
                  └─ PostgreSQL database
 ```
 
+## Calendly receptionist booking
+
+The receptionist booking flow uses one hospital-owned Calendly token on the backend. Reception selects a doctor and patient in MyHealth, sees that doctor's live Calendly availability, then confirms through a prefilled Calendly widget. Setup instructions, the required database migration, and operational limitations are in [CALENDLY_RECEPTION_FLOW.md](CALENDLY_RECEPTION_FLOW.md).
+
 The frontend stores the login token and the selected role in browser `localStorage`. Protected routes check for both values before showing a dashboard. The backend expects the raw JWT value in the `Authorization` header for protected API routes.
 
 ## Repository layout

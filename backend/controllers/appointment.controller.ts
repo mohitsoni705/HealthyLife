@@ -3,9 +3,10 @@ import { getAppoointments, getDoctorScheduleData, getOneAppointmentsData, getPat
 
 export const addAppointment = async (req: Request, res: Response) => {
     const { patient_id, doctor_id, appointment_datetime, reason, status} = req.body;
+    const created_by_user_id = (req as Request & { user_id?: number }).user_id;
     try {
-        const appointment = await insertAppointment({ patient_id, doctor_id, appointment_datetime, status, reason });
-        res.status(200).json({
+        const appointment = await insertAppointment({ patient_id, doctor_id, appointment_datetime, status, reason , created_by_user_id });
+        res.status(201).json({
             "message": "Successfully added appointment",
             appointment
         });
