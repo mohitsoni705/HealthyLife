@@ -1,13 +1,6 @@
 import axios from "axios";
-import {
-  CalendarDays,
-  CheckCircle2,
-  Clock3,
-  Search,
-  Stethoscope,
-  X,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {CalendarDays,Search} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { BACKEND_URL } from "../config";
 import PatientDetailModel, { type Patient } from "./PatientDetailModel";
 import DoctorDetailCard from "./DoctorDetailCard";
@@ -42,17 +35,16 @@ const CalendlyWidget = ({
   doctor: Doctor;
   patient: Patient;
 }) => {
-  console.log(patient.patient_name , patient.email)
   useEffect(() => {
     const container = document.getElementById("doctor-calendly-widget");
-   
+   if(!container || !window.Calendly || !doctor.calendly_event_type_uri) return;
     container.replaceChildren();
     window.Calendly.initInlineWidget({
       url: doctor.calendly_event_type_uri,
       parentElement: container,
       prefill: { name: patient.patient_name, email: patient.email },
     });
-  }, [doctor, patient]);
+  }, [doctor.calendly_event_type_uri, patient.patient_name , patient.email]);
 
   return (
     <div
@@ -67,9 +59,7 @@ const ReceptionAppointmentBooking = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [draftAppointmentId, setDraftAppointmentId] = useState<number | null>(
-    null,
-  );
+  const [draftAppointmentId, setDraftAppointmentId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -120,13 +110,11 @@ const ReceptionAppointmentBooking = () => {
         {
           patient_id: patient.patient_id,
           doctor_id: selectedDoctor.user_id,
-          appointment_datetime: new Date().toISOString(),
+          appointment_datetime: null,
           reason: "Calendly booking in progress",
           status: "pending_calendly",
         },
-        { headers :{
-          authorization:token
-        }},
+        { headers},
       );
       setDraftAppointmentId(response.data?.appointment?.id ?? null);
       setSelectedPatient(patient);
@@ -171,17 +159,14 @@ const ReceptionAppointmentBooking = () => {
     setDraftAppointmentId(null);
     setError("");
   };
-  const filteredDoctors = useMemo(
-    () =>
-      doctors.filter((doctor) =>
-        [doctor.username, doctor.specialization, doctor.email]
-          .filter(Boolean)
-          .some((value) =>
-            value!.toLowerCase().includes(searchTerm.toLowerCase()),
-          ),
-      ),
-    [doctors, searchTerm],
-  );
+  const filteredDoctors = doctors.filter((doctor)=>{
+    const  search = searchTerm.toLowerCase();
+    return(
+      doctor.username?.toLowerCase().includes(search) ||
+      doctor.specialization?.toLowerCase().includes(search) ||
+      doctor.email?.toLowerCase().includes(search)
+    )
+  });
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">

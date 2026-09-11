@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../../config";
 import PatientAddModel from "../../components/PatientAddModel";
@@ -16,7 +16,7 @@ const Patients = () => {
 
   const token = localStorage.getItem("token");
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     setIsLoading(true);
     setError("");
     try {
@@ -33,7 +33,7 @@ const Patients = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchPatients();
@@ -104,8 +104,6 @@ const Patients = () => {
             variant="blue"
           />
         </div>
-
-        {/* Patients Table */}
         {isLoading ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <div className="inline-block animate-spin text-4xl">⏳</div>
