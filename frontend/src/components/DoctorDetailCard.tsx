@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock3, Stethoscope } from "lucide-react";
 
-const DoctorDetailCard=({doctor , setSelectedDoctor})=>{
+const DoctorDetailCard=({doctor , setSelectedDoctor}:any)=>{
     return(
         <>
         <article

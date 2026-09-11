@@ -1,6 +1,6 @@
 import { X } from "lucide-react"
 
-export const BookConsultantCard=({selectedDoctor,close})=>{
+export const BookConsultantCard=({selectedDoctor,close}:any)=>{
     return(
         <div className="flex items-center justify-between border-b px-5 py-4">
                 <div>
